@@ -4,13 +4,43 @@ import FloatingButton from '@/Components/nav/floatingButton';
 import React, { useState, useEffect } from 'react'
 import { Button, Card } from "@material-tailwind/react";
 import {
-    TrashIcon, PaintBrushIcon
+    TrashIcon, PaintBrushIcon, PaperAirplaneIcon
 
 } from "@heroicons/react/24/outline";
 const TABLE_HEAD = ["Yêu Cầu Công Việc", "Địa Chỉ", "Quận", "Số Điện Thoại", "Thợ", "Chức Năng"];
-const TABLE_HEAD_RIGHT = ["Nội Dung Công Việc", "BH", "Địa Chỉ KH", "KV",  "Thanh Toán","SDT", "KTV", "Chi","Thu", "Số Phiếu Thu",  "Chức Năng"];
+const TABLE_HEAD_RIGHT = ["Nội Dung Công Việc", "BH", "Địa Chỉ KH", "KV", "Thanh Toán", "SDT", "KTV", "Chi", "Thu", "Số Phiếu Thu", "Chức Năng"];
 var dataNew = [{
-    idCV: "",
+    idCV: 1,
+    yccv: "",
+    diaChi: "",
+    quan: "",
+    sdt: "",
+}, {
+    idCV: 2,
+    yccv: "",
+    diaChi: "",
+    quan: "",
+    sdt: "",
+}, {
+    idCV: 3,
+    yccv: "",
+    diaChi: "",
+    quan: "",
+    sdt: "",
+},{
+    idCV: 4,
+    yccv: "",
+    diaChi: "",
+    quan: "",
+    sdt: "",
+}, {
+    idCV: 5,
+    yccv: "",
+    diaChi: "",
+    quan: "",
+    sdt: "",
+}, {
+    idCV: 6,
     yccv: "",
     diaChi: "",
     quan: "",
@@ -127,8 +157,8 @@ const listWorker = [
     }
 ]
 export default function Dashboard({ auth }) {
-    const [workData, setWorkData] = useState(data)
-    const [worksData, setWorksData] = useState(dataNew)
+    const [workData, setWorkData] = useState(dataNew)
+    const [worksData, setWorksData] = useState(data)
     const onChangeInput = (e, idCV) => {
         const { name, value } = e.target
         console.log('name', name)
@@ -150,7 +180,7 @@ export default function Dashboard({ auth }) {
     };
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
-        height: window.innerHeight - 100,
+        height: window.innerHeight-100,
     });
     var heightScreenTV = screenSize.height;
     console.log('kich thuoc', heightScreenTV);
@@ -159,13 +189,12 @@ export default function Dashboard({ auth }) {
             user={auth.user}
         >
             <Head title="Trang Chủ" />
-            <Card className={`h-[${heightScreenTV}px] grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1`}>
+            <Card className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
                 {/* bang ben trai  */}
-                <table className="w-full text-left border-r-4 border-red-500 table-auto min-w-max">
+                <table className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`} style={{height:`${heightScreenTV}px`}}>
                     <thead>
                         <tr>
                             {TABLE_HEAD.map((head) => (
-
                                 <th key={head} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50 w-fit">
                                     {head}
                                 </th>
@@ -180,7 +209,7 @@ export default function Dashboard({ auth }) {
                             const classGeneral1 = "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
                             return (
                                 // <input className='w-full' value={workData} />
-                                <tr key={idCV}>
+                                <tr key={index}>
                                     <td className={classes}>
                                         <input
                                             name='yccv'
@@ -236,7 +265,7 @@ export default function Dashboard({ auth }) {
                                     </td>
                                     <td className={`w-32 ${classes} `}>
                                         <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
-                                        <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none '><PaintBrushIcon className='w-4 h-4' /></Button>
+                                        <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none '><PaperAirplaneIcon className='w-4 h-4' /></Button>
                                     </td>
 
                                 </tr>
@@ -257,7 +286,7 @@ export default function Dashboard({ auth }) {
 
                     </thead>
                     <tbody>
-                        {workData.map(({ yccv, diaChi, sdt, quan, idCV, dsChi, dsThu, BH, tinhTrangTT, soPhieuThu }, index) => {
+                        {worksData.map(({ yccv, diaChi, sdt, quan, idCV, dsChi, dsThu, BH, tinhTrangTT, soPhieuThu }, index) => {
                             const isLast = index === data.length - 1;
                             const classes = isLast ? "p-1 w-3 " : "p-1 border-b border-blue-gray-50 w-3";
                             const classGeneral = "border  p-1 rounded border-blue-gray-50 bg-white text-black shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
