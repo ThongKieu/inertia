@@ -168,12 +168,6 @@ export default function Dashboard({ auth }) {
     const [inputName, setInputName] = useState('');
     const [inputValue, setInputValue] = useState('');
 
-    useEffect(() => {
-        const storedInputData = localStorage.getItem('inputData');
-        if (storedInputData) {
-            setInputData(JSON.parse(storedInputData));
-        }
-    }, []);
 
     const handleInputNameChange = (e) => {
         setInputName(e.target.value);
@@ -276,6 +270,19 @@ export default function Dashboard({ auth }) {
     var heightScreenTV = screenSize.height;
     console.log('kich thuoc', heightScreenTV);
 
+    useEffect(() => {
+        fetchData()
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch('api/web/works');
+            const jsonData = await response.json();
+            setWorkData(jsonData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -287,6 +294,7 @@ export default function Dashboard({ auth }) {
                 placeholder="Name"
                 value={inputName}
                 onChange={handleInputNameChange}
+                className='border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none'
             />
             <input
                 type="text"
@@ -359,17 +367,17 @@ export default function Dashboard({ auth }) {
 
                     </thead>
                     <tbody>
-                        {workData.map(({ yccv, diaChi, sdt, quan, idCV, KTV }, index) => {
+                        {workData.map(({ id,work_content, street, phone_number, district, idCV, KTV }, index) => {
                             const isLast = index === data.length - 1;
                             const classes = isLast ? "w-fit " : "border-b border-blue-gray-50 w-fit";
                             const classGeneral1 = "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
                             return (
                                 // <input className='w-full' value={workData} />
-                                <tr key={index}>
+                                <tr key={id}>
                                     <td className={classes}>
                                         <input
                                             name='yccv'
-                                            value={yccv}
+                                            value={work_content}
                                             type="text"
                                             onChange={(e) => onChangeInput(e, idCV)}
                                             placeholder="Yêu Cầu Công Việc"
@@ -383,7 +391,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Địa Chỉ"
                                             className={classGeneral1}
-                                            value={diaChi}
+                                            value={street}
                                             onChange={(e) => onChangeInput(e, idCV)}
                                         />
                                     </td>
@@ -394,7 +402,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Quận"
                                             className={`${classGeneral1} text-center w-12`}
-                                            value={quan}
+                                            value={district}
                                             onChange={(e) => onChangeInput(e, idCV)}
                                         />
                                     </td>
@@ -404,7 +412,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Số Điện Thoại"
                                             className={`${classGeneral1} w-28 text-center`}
-                                            value={sdt}
+                                            value={phone_number}
                                             onChange={(e) => onChangeInput(e, idCV)}
                                         />
                                     </td>
@@ -453,7 +461,7 @@ export default function Dashboard({ auth }) {
                                     <td className={classes}>
                                         <input
                                             name='yccv'
-                                            value={yccv}
+                                            value={yccv ?? ''}
                                             type="text"
                                             onChange={(e) => onChangeInputTableRight(e, idCV)}
                                             placeholder="Nội Dung Công Việc"
@@ -468,7 +476,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="BH"
                                             className={`${classGeneral} text-center w-12`}
-                                            value={BH}
+                                            value={BH ?? ''}
                                             onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
@@ -479,7 +487,7 @@ export default function Dashboard({ auth }) {
                                             placeholder="Địa Chỉ"
                                             className={classGeneral}
 
-                                            value={diaChi}
+                                            value={diaChi ?? ''}
                                             onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
@@ -491,7 +499,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Quận"
                                             className={`${classGeneral} text-center w-12`}
-                                            value={quan}
+                                            value={quan ?? ''}
                                             onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
@@ -502,7 +510,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder=""
                                             className={`${classGeneral} text-center w-16`}
-                                            value={tinhTrangTT}
+                                            value={tinhTrangTT ?? ''}
                                             onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
@@ -512,7 +520,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Số Điện Thoại"
                                             className={`${classGeneral} w-28 text-center`}
-                                            value={sdt}
+                                            value={sdt ?? ''}
                                             onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
