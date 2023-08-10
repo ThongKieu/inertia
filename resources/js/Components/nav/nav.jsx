@@ -44,7 +44,7 @@ function ProfileMenu() {
         <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
             <div className="relative flex items-center mx-auto text-blue-gray-900">
                 <NavLink
-                    href={route('dashboard')}
+                    href={route('admin')}
                     className="py-1 ml-2 font-medium cursor-pointer"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-green-500">
