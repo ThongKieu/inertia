@@ -36,9 +36,8 @@ class WorkersController extends Controller
         'add_woker'=>$request->add_woker,
         'phone_ct'=>$request->phone_ct,
         'phone_cn'=>$request->phone_cn,
-        'folder_path'=>'assets/'.$request->folder_path,
+        'folder_path'=>'assets/'.$request->sort_name,
         'kind_worker'=>$request->kind_worker,
-       
         'avata'=>'assets/avata/'.$request->folder_path.'.png',
        ]);
         $new->save();
