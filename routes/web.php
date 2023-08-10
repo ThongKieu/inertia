@@ -24,16 +24,16 @@ use Inertia\Inertia;
 //         'phpVersion' => PHP_VERSION,
 //     ]);
 // });
+// Route::middleware('auth')->group
 
-Route::get('/', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+
 
 
 Route::middleware('auth')->group(function () {
-
+    Route::get('/', function () {return Inertia::render('Dashboard');})->name('dashboard');
     Route::prefix('admin')->group(function(){
         Route::get('/',function(){return Inertia::render('Admin/HomeAdmin');})->name('admin');
+        Route::get('/worker',function(){return Inertia::render('Admin/Worker/Worker');})->name('Worker');
     });
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

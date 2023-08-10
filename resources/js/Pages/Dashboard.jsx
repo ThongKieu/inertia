@@ -10,45 +10,52 @@ import {
 const TABLE_HEAD = ["Yêu Cầu Công Việc", "Địa Chỉ", "Quận", "Số Điện Thoại", "Thợ", "Chức Năng"];
 const TABLE_HEAD_RIGHT = ["Nội Dung Công Việc", "BH", "Địa Chỉ KH", "KV", "Thanh Toán", "SDT", "KTV", "Chi", "Thu", "Số Phiếu Thu", "Chức Năng"];
 var dataNew = [{
-    idCV: 1,
+    idCV: Math.floor(Math.random() * 1000),
     yccv: "",
     diaChi: "",
     quan: "",
     sdt: "",
+    KTV: ""
+},
+{
+    idCV: Math.floor(Math.random() * 1000),
+    yccv: "",
+    diaChi: "",
+    quan: "",
+    sdt: "",
+    KTV: ""
 }, {
-    idCV: 2,
+    idCV: Math.floor(Math.random() * 1000),
     yccv: "",
     diaChi: "",
     quan: "",
     sdt: "",
+    KTV: ""
 }, {
-    idCV: 3,
+    idCV: Math.floor(Math.random() * 1000),
     yccv: "",
     diaChi: "",
     quan: "",
     sdt: "",
-},{
-    idCV: 4,
-    yccv: "",
-    diaChi: "",
-    quan: "",
-    sdt: "",
+    KTV: ""
 }, {
-    idCV: 5,
+    idCV: Math.floor(Math.random() * 1000),
     yccv: "",
     diaChi: "",
     quan: "",
     sdt: "",
+    KTV: ""
 }, {
-    idCV: 6,
+    idCV: Math.floor(Math.random() * 1000),
     yccv: "",
     diaChi: "",
     quan: "",
     sdt: "",
+    KTV: ""
 },]
 const data = [
     {
-        idCV: 1,
+        idCV: Math.floor(Math.random() * 1000),
         yccv: "Sửa Nhà",
         diaChi: "Trần Hưng Đạo",
         quan: "q1",
@@ -60,7 +67,7 @@ const data = [
         tinhTrangTT: 'chua tt'
     },
     {
-        idCV: 2,
+        idCV: Math.floor(Math.random() * 1000),
         yccv: "Sửa Máy Lạnh",
         diaChi: "15 Nguyễn Trãi",
         quan: "q1",
@@ -71,7 +78,7 @@ const data = [
         tinhTrangTT: 'chua tt'
     },
     {
-        idCV: 3,
+        idCV: Math.floor(Math.random() * 1000),
         yccv: "Sửa Điện",
         diaChi: "30 Trần Xuân Soạn",
         quan: "q7",
@@ -82,7 +89,7 @@ const data = [
         tinhTrangTT: 'chua tt'
     },
     {
-        idCV: 4,
+        idCV: Math.floor(Math.random() * 1000),
         yccv: "Sửa máy bớm nước",
         diaChi: "15 Phạm Thế Hiển",
         quan: "q8",
@@ -93,7 +100,7 @@ const data = [
         tinhTrangTT: 'chua tt'
     },
     {
-        idCV: 5,
+        idCV: Math.floor(Math.random() * 1000),
         yccv: "Sửa dốc dắt xe",
         diaChi: "456 Sư Vạn Hạnh",
         quan: "q10",
@@ -104,7 +111,7 @@ const data = [
         tinhTrangTT: 'chua tt'
     },
     {
-        idCV: 6,
+        idCV: Math.floor(Math.random() * 1000),
         yccv: "",
         diaChi: "",
         quan: "",
@@ -157,8 +164,80 @@ const listWorker = [
     }
 ]
 export default function Dashboard({ auth }) {
-    const [workData, setWorkData] = useState(dataNew)
+    const [inputData, setInputData] = useState([]);
+    const [inputName, setInputName] = useState('');
+    const [inputValue, setInputValue] = useState('');
+
+
+    const handleInputNameChange = (e) => {
+        setInputName(e.target.value);
+    };
+
+    const handleInputValueChange = (e) => {
+        setInputValue(e.target.value);
+    };
+
+    const handleAddInputRow = () => {
+        const newRow = { id: 'tv'+ Math.floor(Math.random() * 1000), name: inputName, value: inputValue };
+        setInputData([...inputData, newRow]);
+        onAddRow(newRow);
+        setInputName('');
+        setInputValue('');
+    };
+
+    useEffect(() => {
+        localStorage.setItem('inputData', JSON.stringify(inputData));
+    }, [inputData]);
+    // ----------------
+    const initialData = [
+        { id: 1, name: '', value: '' },
+        { id: 2, name: '', value: '' },
+        { id: 3, name: '', value: '' },
+    ];
+    const [tableData, setTableData] = useState(initialData);
+    useEffect(() => {
+        const storedData = localStorage.getItem('tableData');
+        if (storedData) {
+            setTableData(JSON.parse(storedData));
+        }
+    }, []);
+    const handleInputChange = (e, id, field) => {
+        const newValue = e.target.value;
+        const updatedData = tableData.map(item => {
+            if (item.id === id) {
+                return { ...item, [field]: newValue };
+            }
+            return item;
+        });
+        setTableData(updatedData);
+        localStorage.setItem('tableData', JSON.stringify(updatedData));
+    };
+
+
+    // edit Table right
     const [worksData, setWorksData] = useState(data)
+    console.log('setWorksData', worksData);
+    const onChangeInputTableRight = (e, idCV) => {
+        const { name, value } = e.target
+        const editDataTableRight = worksData.map((item) =>
+            item.idCV === idCV && name ? { ...item, [name]: value } : item
+        )
+        setWorksData(editDataTableRight)
+    }
+    const [workData, setWorkData] = useState(dataNew)
+    console.log("Log Workdata", workData);
+    const handleSubmitAddWork = (e) => {
+        e.preventDefault();
+        setWorksData(prev => {
+            const newWorkData = [...prev, workData]
+            const jsonNewData = JSON.stringify(newWorkData)
+            localStorage.setItem('WorkData', jsonNewData)
+            return newWorkData
+        })
+        setWorkData('')
+
+    }
+
     const onChangeInput = (e, idCV) => {
         const { name, value } = e.target
         console.log('name', name)
@@ -168,30 +247,115 @@ export default function Dashboard({ auth }) {
             item.idCV === idCV && name ? { ...item, [name]: value } : item
         )
         setWorkData(editData)
+        console.log(idCV);
     }
-    const [selectedOption, setSelectedOption] = useState('');
+
+    const [selectedOption, setSelectedOption] = useState();
     const [options, setOptions] = useState([]);
     useEffect(() => {
         setOptions(listWorker);
     }, []);
 
-    const handleOptionChange = (event) => {
-        setSelectedOption(event.target.value);
+    const handleOptionChange = (e, idTho) => {
+        console.log(idTho);
+        console.log("selected", selectedOption);
+        setSelectedOption(e.target.value);
     };
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
-        height: window.innerHeight-100,
+        height: window.innerHeight - 100,
+
     });
+    // setScreenSize(height);
     var heightScreenTV = screenSize.height;
     console.log('kich thuoc', heightScreenTV);
+
+    useEffect(() => {
+        fetchData()
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch('api/web/works');
+            const jsonData = await response.json();
+            setWorkData(jsonData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
     return (
         <AuthenticatedLayout
             user={auth.user}
         >
             <Head title="Trang Chủ" />
+            <h2>Input Table</h2>
+            <input
+                type="text"
+                placeholder="Name"
+                value={inputName}
+                onChange={handleInputNameChange}
+                className='border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none'
+            />
+            <input
+                type="text"
+                placeholder="Value"
+                value={inputValue}
+                onChange={handleInputValueChange}
+            />
+            <button onClick={handleAddInputRow}>Add Row</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {inputData.map(item => (
+                        <tr key={item.id}>
+                            <td>{item.id}</td>
+                            <td>{item.name}</td>
+                            <td>{item.value}</td>
+                            <td>{item.value}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <h1>Editable Input Table</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {tableData.map(item => (
+                        <tr key={item.id}>
+                            <td>{item.id}</td>
+                            <td>
+                                <input
+                                    type="text"
+                                    value={item.name}
+                                    onChange={(e) => handleInputChange(e, item.id, 'name')}
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="text"
+                                    value={item.value}
+                                    onChange={(e) => handleInputChange(e, item.id, 'value')}
+                                />
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
             <Card className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
                 {/* bang ben trai  */}
-                <table className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`} style={{height:`${heightScreenTV}px`}}>
+                <table className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`} style={{ height: `${heightScreenTV}px` }}>
                     <thead>
                         <tr>
                             {TABLE_HEAD.map((head) => (
@@ -203,17 +367,17 @@ export default function Dashboard({ auth }) {
 
                     </thead>
                     <tbody>
-                        {workData.map(({ yccv, diaChi, sdt, quan, idCV }, index) => {
+                        {workData.map(({ id,work_content, street, phone_number, district, idCV, KTV }, index) => {
                             const isLast = index === data.length - 1;
                             const classes = isLast ? "w-fit " : "border-b border-blue-gray-50 w-fit";
                             const classGeneral1 = "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
                             return (
                                 // <input className='w-full' value={workData} />
-                                <tr key={index}>
+                                <tr key={id}>
                                     <td className={classes}>
                                         <input
                                             name='yccv'
-                                            value={yccv}
+                                            value={work_content}
                                             type="text"
                                             onChange={(e) => onChangeInput(e, idCV)}
                                             placeholder="Yêu Cầu Công Việc"
@@ -227,7 +391,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Địa Chỉ"
                                             className={classGeneral1}
-                                            value={diaChi}
+                                            value={street}
                                             onChange={(e) => onChangeInput(e, idCV)}
                                         />
                                     </td>
@@ -238,7 +402,7 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Quận"
                                             className={`${classGeneral1} text-center w-12`}
-                                            value={quan}
+                                            value={district}
                                             onChange={(e) => onChangeInput(e, idCV)}
                                         />
                                     </td>
@@ -248,29 +412,30 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Số Điện Thoại"
                                             className={`${classGeneral1} w-28 text-center`}
-                                            value={sdt}
+                                            value={phone_number}
                                             onChange={(e) => onChangeInput(e, idCV)}
                                         />
                                     </td>
                                     <td className={`${classes} bg-blue-gray-50/50 w-20`}>
-                                        <select id="selectOption" value={selectedOption} onChange={handleOptionChange} className={classGeneral1}>
-                                            <option value="">Chọn</option>
-                                            {options.map((option) => (
-                                                <option key={option.tenNV} value={option.tenNV}>
-                                                    {option.tenNV}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        <input
+                                            name='KTV'
+                                            type="text"
+                                            placeholder="KTV"
+                                            className={`${classGeneral1} w-16 text-center`}
+                                            value={KTV}
+                                            onChange={(e) => onChangeInput(e, idCV)}
+                                        />
 
                                     </td>
                                     <td className={`w-32 ${classes} `}>
                                         <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
-                                        <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none '><PaperAirplaneIcon className='w-4 h-4' /></Button>
+                                        <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none ' onClick={e => handleSubmitAddWork(e, idCV)}><PaperAirplaneIcon className='w-4 h-4' /></Button>
                                     </td>
 
                                 </tr>
                             );
                         })}
+
                     </tbody>
                 </table>
                 {/* bang ben phai */}
@@ -291,14 +456,14 @@ export default function Dashboard({ auth }) {
                             const classes = isLast ? "p-1 w-3 " : "p-1 border-b border-blue-gray-50 w-3";
                             const classGeneral = "border  p-1 rounded border-blue-gray-50 bg-white text-black shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
                             return (
-                                <tr key={idCV}>
+                                <tr key={index}>
 
                                     <td className={classes}>
                                         <input
                                             name='yccv'
-                                            value={yccv}
+                                            value={yccv ?? ''}
                                             type="text"
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                             placeholder="Nội Dung Công Việc"
                                             className={classGeneral}
 
@@ -307,12 +472,12 @@ export default function Dashboard({ auth }) {
                                     <td className={classes}>
 
                                         <input
-                                            name='quan'
+                                            name='BH'
                                             type="text"
                                             placeholder="BH"
                                             className={`${classGeneral} text-center w-12`}
-                                            value={BH}
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            value={BH ?? ''}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
                                     <td className={`${classes} bg-blue-gray-50/50`}>
@@ -322,8 +487,8 @@ export default function Dashboard({ auth }) {
                                             placeholder="Địa Chỉ"
                                             className={classGeneral}
 
-                                            value={diaChi}
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            value={diaChi ?? ''}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
 
@@ -334,19 +499,19 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Quận"
                                             className={`${classGeneral} text-center w-12`}
-                                            value={quan}
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            value={quan ?? ''}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
                                     <td className={classes}>
 
                                         <input
-                                            name='quan'
+                                            name='tinhTrangTT'
                                             type="text"
                                             placeholder=""
                                             className={`${classGeneral} text-center w-16`}
-                                            value={tinhTrangTT}
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            value={tinhTrangTT ?? ''}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
                                     <td className={classes}>
@@ -355,8 +520,8 @@ export default function Dashboard({ auth }) {
                                             type="text"
                                             placeholder="Số Điện Thoại"
                                             className={`${classGeneral} w-28 text-center`}
-                                            value={sdt}
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            value={sdt ?? ''}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
                                     <td className={`${classes} bg-blue-gray-50/50 w-20`}>
@@ -364,10 +529,10 @@ export default function Dashboard({ auth }) {
                                             <p  value={itemNV.idTho}>{itemNV.tenNV}</p>
                                             console.log('nhan vien:',itemNV.tenNV);
                                         })}</p> */}
-                                        <select id="selectOption" value={selectedOption} onChange={handleOptionChange} className={classGeneral}>
+                                        <select id={idCV} value={selectedOption} onChange={(e) => handleOptionChange(e, idCV)} className={classGeneral}>
                                             <option value="">Chọn</option>
-                                            {options.map((option) => (
-                                                <option key={option.tenNV} value={option.tenNV}>
+                                            {options.map((option, index) => (
+                                                <option key={index} value={option.tenNV}>
                                                     {option.tenNV}
                                                 </option>
                                             ))}
@@ -376,32 +541,32 @@ export default function Dashboard({ auth }) {
                                     </td>
                                     <td className={classes}>
                                         <input
-                                            name='sdt'
+                                            name='dsChi'
                                             type="text"
                                             placeholder="Chi"
                                             className={`${classGeneral} w-28 text-center`}
                                             value={dsChi}
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
                                     <td className={classes}>
                                         <input
-                                            name='sdt'
+                                            name='dsThu'
                                             type="text"
                                             placeholder="Thu"
                                             className={`${classGeneral} w-28 text-center`}
                                             value={dsThu}
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
                                     <td className={classes}>
                                         <input
-                                            name='sdt'
+                                            name='soPhieuThu'
                                             type="text"
                                             placeholder="Thu"
                                             className={`${classGeneral} w-28 text-center`}
                                             value={soPhieuThu}
-                                            onChange={(e) => onChangeInput(e, idCV)}
+                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
                                         />
                                     </td>
 

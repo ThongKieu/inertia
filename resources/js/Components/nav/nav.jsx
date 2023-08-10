@@ -69,8 +69,11 @@ function ProfileMenu() {
 
 
                 </NavLink>
+                {/* <Dropdown.Link href={route('logout')} method="post" as="button">
+                                            Log Out
+                                        </Dropdown.Link> */}
                 <NavLink
-                    href={route('dashboard')}
+                    href={route('logout')} method="post" as="button"
                     className="mr-4 ml-2 cursor-pointer py-1.5 font-medium "
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-red-500">

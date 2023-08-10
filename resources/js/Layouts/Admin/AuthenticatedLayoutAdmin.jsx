@@ -1,4 +1,4 @@
-import NavbarDefault from '@/Components/nav/Admin/test';
+import NavbarDefault from '@/Components/nav/Admin/NavAdmin';
 
 export default function Authenticated({children }) {
     return (

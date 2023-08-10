@@ -9,8 +9,6 @@ export default function HomeAdmin({ auth }) {
             user={auth.user}
         >
             <Head title="Home Admin" />
-            
-
         </AuthenticatedLayout>
     );
 }
