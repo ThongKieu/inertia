@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 class WorksController extends Controller
 {
     //
+  
     public function index ()
     {
        
@@ -17,9 +18,41 @@ class WorksController extends Controller
     }
     public function store (StoreWorkRequest $request)
     {
+        // dd($request->all());
         Work::create($request->validated());
-      
-        return response()->json('This is your work2s');
+        $id = Work::where('phone_number','=',$request->phone_number)->where('work_content','=',$request->work_content)->value('id');
+        // if($request->hasFile('image_work_path'))
+        // {
+        //     // dd( $request->file('image_work_path'));
+           
+        //     $images = $request->file('image_work_path');
+        //     // $arr =[];
+        //     // // return $images;
+        //     // foreach($images as $image)
+        //     // {
+        //     //     echo $request->file('image_work_path');
+        //     //     $imageName = $id.'-'.time().rand(10,999).'.'.$image->extension();  
+        //     //     $path = $image->move('assets/images/work/'.$id.'/', $imageName);
+        //     //     // $arr[] = $path;
+        //     //     echo $path;
+        //     // }
+            
+
+        //     // Work::where('id','=',$id)->update(['image_work_path'=>$images]);
+        //     return response()->json(1);
+        // }
+        $files = [];
+        if($request->hasfile('image_work_path'))
+		{
+			foreach($request->file('image_work_path') as $file)
+			{
+			    $name = time().rand(1,100).'.'.$file->extension();
+			    $file->move('assets/images/work/', $name);  
+			    $files[] = $name;  
+			}
+		}
+        return response()->json('Create Work Done');
+       
     }
 
     public function update(StoreWorkRequest $request, Work $work )
@@ -28,5 +61,17 @@ class WorksController extends Controller
         $work->update($request->validated());
         return response()->json('Update Work done');
 
+    }
+    public static function upload($file)
+    {
+        if ($file->hasFile('image')) {
+            $image = $file->file('image');
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads'), $imageName);
+
+            return response()->json(['message' => 'Image uploaded successfully']);
+        }
+
+        return response()->json(['message' => 'No image uploaded'], 400);
     }
 }
