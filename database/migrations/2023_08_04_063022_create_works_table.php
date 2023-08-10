@@ -20,6 +20,7 @@ return new class extends Migration
             $table->String('street', 500)->nullable();
             $table->String('district');
             $table->integer('phone_number');
+            $table->String('image_work_path',1000)->nullable();
             $table->tinyInteger('members_read')->default(0);
             $table->tinyInteger('kind_work')->default(0)->comment('0: điện nước; 1 điện lạnh; 2: xây dựng; 3 đồ gỗ; 4: cơ khí; 5: Tài Xế; 6: Khác');
             $table->tinyInteger('status_cus')->default(0)->comment('0: Chưa Phân; 1: Đã Phân;2: Khách Hủy ');

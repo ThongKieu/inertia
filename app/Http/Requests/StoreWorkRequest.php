@@ -30,10 +30,7 @@ class StoreWorkRequest extends FormRequest
             'kind_work'=>'required|numeric',
             'status_cus'=>'required|numeric',
             'flag_status'=>'required|numeric',
-            'from_cus'=>'required|numeric',
-            'street'=>'max:500',
-            'name_cus'=>'max:500',
-            'work_note'=>'max:1000'
+            'from_cus'=>'required|numeric'
         ];
     }
 }
