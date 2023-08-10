@@ -132,8 +132,9 @@ function FloatingButton() {
                     <DialogHeader className=" md:max-lg:text-xs">Thêm Khách Hàng Mới</DialogHeader>
                     <XMarkIcon className="w-5 h-5 mr-3 cursor-pointer" onClick={handleOpen} />
                 </div>
+                <form className="flex flex-col"  >
                 <DialogBody divider>
-                    <form className="flex flex-col"  >
+
                         <div className="my-1">
                             <div className="my-2">
                                 <Input
@@ -240,13 +241,15 @@ function FloatingButton() {
                                 ))}
                             </div>
                         </div>
-                        <Button size="lg" className="w-11/12" onClick={handleAddWork}>Thêm</Button>
-                    </form>
+
+
                 </DialogBody>
-                {/* <DialogFooter className="justify-center space-x-2">
-                    <Button size="lg" className="w-11/12" onClick={handleAddWork}>Thêm</Button>
-                </DialogFooter> */}
+                    <DialogFooter className="justify-center space-x-2">
+                        <Button size="lg" className="w-11/12" onClick={handleAddWork}>Thêm</Button>
+                    </DialogFooter>
+                </form>
             </Dialog>
+
         </Fragment>
     );
 }
