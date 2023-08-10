@@ -21,34 +21,17 @@ class WorksController extends Controller
         dd($request->all());
         Work::create($request->validated());
         $id = Work::where('phone_number','=',$request->phone_number)->where('work_content','=',$request->work_content)->value('id');
-        // if($request->hasFile('image_work_path'))
-        // {
-        //     // dd( $request->file('image_work_path'));
-           
-        //     $images = $request->file('image_work_path');
-        //     // $arr =[];
-        //     // // return $images;
-        //     // foreach($images as $image)
-        //     // {
-        //     //     echo $request->file('image_work_path');
-        //     //     $imageName = $id.'-'.time().rand(10,999).'.'.$image->extension();  
-        //     //     $path = $image->move('assets/images/work/'.$id.'/', $imageName);git
-        //     //     // $arr[] = $path;
-        //     //     echo $path;
-        //     // }
-            
-
-        //     // Work::where('id','=',$id)->update(['image_work_path'=>$images]);
-        //     return response()->json(1);
-        // }
-        // $files = [];
+        $files = [];
+        
         if($request->hasfile('image_work_path'))
 		{
-			// foreach($request->file('image_work_path') as $file)
-			// {
+        dd($request->file('image_work_path'));
+			foreach($request->file('image_work_path') as $file)
+			{
 			    $name = time().rand(1,100).'.'.$request->file('image_work_path')->extension();
-               $path = $request->file('image_work_path')->move('assets/images/work', $name);  
-			    // $files[] = $name;  
+                $path = $request->file('image_work_path')->move('assets/images/work', $name);  
+			    $files[] = $name;  
+            }
 			Work::where('id','=',$id)->update(['image_work_path'=>$path]);
 
             return response()->json('Add image Done');
