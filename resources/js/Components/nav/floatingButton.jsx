@@ -40,19 +40,20 @@ function FloatingButton() {
     const [previewImages, setPreviewImages] = useState([]);
     const [formData, setFormData] = useState({
         work_content: '',
-        name_cus: '',
         date_book: '',
+        phone_number: '',
+        district: '',
         work_note: '',
         street: '',
-        district: '',
-        phone_number: '',
         members_read: 1,
-        kind_work: '0',
+        kind_work: 0,
         status_cus: 1,
         from_cus: 1,
-        flag_status: 1
+        flag_status: 1,
+        // image_work_path:[]
     });
     console.log('test selectedFiles',selectedFiles);
+    console.log('test formData truoc khi gui',formData);
     const handleChange = (e) => {
         const { name, value } = e.target;
         console.log('name', name);
@@ -73,43 +74,51 @@ function FloatingButton() {
         e.preventDefault();
 
         const formData1 = new FormData();
-        selectedFiles.forEach((file) => {
-            formData1.append('image_work_path', file);
-        });
+        // selectedFiles.forEach((file) => {
+        //     formData1.append('image_work_path', file);
+
+        // });
+        for (let i = 0; i < selectedFiles.length; i++) {
+            formData1.append('files[]', selectedFiles[i]);
+            console.log(`selectedFiles[${i}]`,selectedFiles[i]);
+        }
+        console.log(`selectedFiles1111`,selectedFiles);
         formData1.append("work_content", formData.work_content);
-        console.log("work_content",formData.work_content);
         formData1.append("date_book", formData.date_book);
         formData1.append("district",formData.district);
         formData1.append("phone_number", formData.phone_number);
-        formData1.append("members_read", formData.members_read);
         formData1.append("kind_work", formData.kind_work);
         formData1.append("status_cus",formData.status_cus);
         formData1.append("flag_status",formData.flag_status);
         formData1.append("from_cus",formData.from_cus);
         formData1.append("street", formData.street);
-        // formData.append("image_work_path", formData.files[0]);
+        formData1.append("menber_read", formData.members_read);
+        // formData.append("image_work_path", document.getElementById('hinh').file);
+        // console.log("image_work_path", formData.file);
         console.log("form data date_book", formData.date_book);
-        console.log("form data formData1", formData1);
-        console.log("form data formData", formData);
+        console.log("form data formData 1 ---------",  formData1);
+        console.log("form data form Data", formData);
         try {
-            const response = await fetch('http://192.168.1.3/api/web/works', {
+            const response = await fetch('api/web/works', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
                 mode: 'no-cors',
-                body: JSON.stringify(formData),
+                body: formData1,
             });
             console.log('Files uploaded successfully',response);
-            if (response.ok) {
-                console.log('Files uploaded successfully',response);
-            } else {
-                console.error('Error uploading files');
+            if (response.status !== 200) {
+                const err = new Error("Error")
+                throw err;
+              }
+              const dataReply = await response.json()
+            //   window.location.reload();
+              console.log(dataReply);
+            } catch (error) {
+              console.log(error);
             }
-        } catch (error) {
-            console.error('Error:', error);
-        }
     };
     return (
         <Fragment>
@@ -124,7 +133,7 @@ function FloatingButton() {
                     <XMarkIcon className="w-5 h-5 mr-3 cursor-pointer" onClick={handleOpen} />
                 </div>
                 <DialogBody divider>
-                    <form className="flex flex-col"  onSubmit={handleAddWork}>
+                    <form className="flex flex-col"  >
                         <div className="my-1">
                             <div className="my-2">
                                 <Input
@@ -214,11 +223,12 @@ function FloatingButton() {
                             <div className="flex items-center justify-center ">
                                 <span className="sr-only">Chọn hình ảnh thực tế</span>
                                 <input
+                                    id="hinh"
                                     type="file"
-                                    accept="image/*"
-                                    multiple
                                     onChange={handleFileChange}
+                                    multiple
                                     className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100 "
+
                                 />
                                 {previewImages.map((preview, index) => (
                                     <img
@@ -230,7 +240,7 @@ function FloatingButton() {
                                 ))}
                             </div>
                         </div>
-                        <Button size="lg" className="w-11/12" type="submit">Thêm</Button>
+                        <Button size="lg" className="w-11/12" onClick={handleAddWork}>Thêm</Button>
                     </form>
                 </DialogBody>
                 {/* <DialogFooter className="justify-center space-x-2">

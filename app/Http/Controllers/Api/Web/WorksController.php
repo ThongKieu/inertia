@@ -10,34 +10,35 @@ use Illuminate\Http\Request;
 class WorksController extends Controller
 {
     //
-  
+
     public function index ()
     {
-       
+
         return response()->json( Work::all());
     }
     public function store (StoreWorkRequest $request)
     {
-        dd($request->all());
+        // dd($request->all());
         Work::create($request->validated());
         $id = Work::where('phone_number','=',$request->phone_number)->where('work_content','=',$request->work_content)->value('id');
         $files = [];
-        
+
         if($request->hasfile('image_work_path'))
 		{
-        dd($request->file('image_work_path'));
+        // dd($request->file('image_work_path'));
 			foreach($request->file('image_work_path') as $file)
 			{
-			    $name = time().rand(1,100).'.'.$request->file('image_work_path')->extension();
-                $path = $request->file('image_work_path')->move('assets/images/work', $name);  
-			    $files[] = $name;  
+			    $name = time().rand(1,100).'.'.$file->extension();
+                $path = $file->move('assets/images/work', $name);
+			    $files[] = $name;
+                return $file;
             }
-			Work::where('id','=',$id)->update(['image_work_path'=>$path]);
+			// Work::where('id','=',$id)->update(['image_work_path'=>$path]);
 
             return response()->json('Add image Done');
 		}
         return response()->json('Create Work Done');
-       
+
     }
 
     public function update(StoreWorkRequest $request, Work $work )
