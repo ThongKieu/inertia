@@ -11,8 +11,11 @@ class Work extends Model
     protected $fillable =
     [
         'work_content',
+        'work_note',
+        'name_cus',
         'date_book',
         'phone_number',
+        'street',
         'district',
         'members_read',
         'kind_work',
