@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreWorkRequest;
 use App\Models\Work;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class WorksController extends Controller
 {
@@ -18,23 +19,23 @@ class WorksController extends Controller
     }
     public function store (StoreWorkRequest $request)
     {
-        // dd($request->all());
-        // dd($request->all());
         Work::create($request->validated());
+        // dd($request->all());
+
         $id = Work::where('phone_number','=',$request->phone_number)->where('work_content','=',$request->work_content)->value('id');
         $files = [];
-
+        
         if($request->hasfile('image_work_path'))
 		{
-        dd($request->file('image_work_path'));
 			foreach($request->file('image_work_path') as $file)
 			{
-			    $name = time().rand(1,100).'.'.$file->extension();
-                $path = $file->move('assets/images/work', $name);
-			    $files[] = $name;
-                return $file;
+			    $name = $id.'-'.time().rand(10,100).'.'.$file->extension();
+                $file->move('assets/images/work', $name);
+			    $files[] = 'assets/images/work/'.$name;
             }
-			// Work::where('id','=',$id)->update(['image_work_path'=>$path]);
+            $serializedArr = json_encode($files);
+            DB::table('works')->where('works.id', '=', $id)-> update(['works.image_work_path'=>$files]);
+			// Work::where('id','=',$id)->update(['image_work_path'=>"'".$serializedArr."'"]);
 
             return response()->json('Add image Done');
 		}

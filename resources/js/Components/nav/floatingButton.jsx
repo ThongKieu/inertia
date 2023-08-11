@@ -52,11 +52,11 @@ function FloatingButton() {
         flag_status: 1,
         // image_work_path:[]
     });
-    console.log('test selectedFiles',selectedFiles);
-    console.log('test formData truoc khi gui',formData);
+    // console.log('test selectedFiles',selectedFiles);
+    // console.log('test formData truoc khi gui',formData);
     const handleChange = (e) => {
         const { name, value } = e.target;
-        console.log('name', name);
+        // console.log('name', name);
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
@@ -65,7 +65,7 @@ function FloatingButton() {
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         setSelectedFiles(files);
-        console.log('Gui File', files);
+        // console.log('Gui File', files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
     };
@@ -79,10 +79,10 @@ function FloatingButton() {
 
         // });
         for (let i = 0; i < selectedFiles.length; i++) {
-            formData1.append('files[]', selectedFiles[i]);
-            console.log(`selectedFiles[${i}]`,selectedFiles[i]);
+            formData1.append('image_work_path[]', selectedFiles[i]);
+            // console.log(`selectedFiles[${i}]`,selectedFiles[i]);
         }
-        console.log(`selectedFiles1111`,selectedFiles);
+        // console.log(`selectedFiles1111`,selectedFiles);
         formData1.append("work_content", formData.work_content);
         formData1.append("date_book", formData.date_book);
         formData1.append("district",formData.district);
@@ -93,12 +93,13 @@ function FloatingButton() {
         formData1.append("from_cus",formData.from_cus);
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
-        // formData.append("image_work_path", document.getElementById('hinh').file);
-        // console.log("image_work_path", formData.file);
-        console.log("form data date_book", formData.date_book);
-        console.log("form data formData 1 ---------",  formData1);
-        console.log("form data form Data", formData);
+        // // formData.append("image_work_path", document.getElementById('hinh').file);
+        // // console.log("image_work_path", formData.file);
+        // console.log("form data date_book", formData.date_book);
+        // console.log("form data formData 1 ---------",  formData1);
         try {
+        console.log("fhihihihihihihihi", formData1);
+
             const response = await fetch('api/web/works', {
                 method: 'POST',
                 headers: {

@@ -34,7 +34,7 @@ class StoreWorkRequest extends FormRequest
             'street'=>'max:500',
             'name_cus'=>'max:500',
             'work_note'=>'max:1000',
-            'image_work_path.*'=>'required|image|mimes:jpeg,png,jpg,gif,svg|max:1024'
+            
         ];
     }
 }
