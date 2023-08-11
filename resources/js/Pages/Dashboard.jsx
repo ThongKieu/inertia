@@ -2,12 +2,22 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import FloatingButton from '@/Components/nav/floatingButton';
 import React, { useState, useEffect } from 'react'
-import { Button, Card } from "@material-tailwind/react";
+import {
+    Button,
+    Dialog,
+    DialogHeader,
+    DialogBody,
+    DialogFooter,
+    Avatar,
+    IconButton,
+    Typography,
+    Card
+} from "@material-tailwind/react";
 import {
     TrashIcon, PaintBrushIcon, PaperAirplaneIcon
 
 } from "@heroicons/react/24/outline";
-const TABLE_HEAD = ["Yêu Cầu Công Việc", "Địa Chỉ", "Quận", "Số Điện Thoại", "Thợ", "Chức Năng"];
+const TABLE_HEAD = ["Yêu Cầu Công Việc", "Địa Chỉ", "Quận", "Số Điện Thoại", "Thợ", "Hình Ảnh", "Chức Năng"];
 const TABLE_HEAD_RIGHT = ["Nội Dung Công Việc", "BH", "Địa Chỉ KH", "KV", "Thanh Toán", "SDT", "KTV", "Chi", "Thu", "Số Phiếu Thu", "Chức Năng"];
 var dataNew = [{
     idCV: Math.floor(Math.random() * 1000),
@@ -15,7 +25,7 @@ var dataNew = [{
     diaChi: "",
     quan: "",
     sdt: "",
-    KTV: ""
+    KTV: "",
 },
 {
     idCV: Math.floor(Math.random() * 1000),
@@ -164,59 +174,12 @@ const listWorker = [
     }
 ]
 export default function Dashboard({ auth }) {
-    const [inputData, setInputData] = useState([]);
-    const [inputName, setInputName] = useState('');
-    const [inputValue, setInputValue] = useState('');
+    const [workData, setWorkData] = useState(dataNew)
 
-
-    const handleInputNameChange = (e) => {
-        setInputName(e.target.value);
-    };
-
-    const handleInputValueChange = (e) => {
-        setInputValue(e.target.value);
-    };
-
-    const handleAddInputRow = () => {
-        const newRow = { id: 'tv'+ Math.floor(Math.random() * 1000), name: inputName, value: inputValue };
-        setInputData([...inputData, newRow]);
-        onAddRow(newRow);
-        setInputName('');
-        setInputValue('');
-    };
-
-    useEffect(() => {
-        localStorage.setItem('inputData', JSON.stringify(inputData));
-    }, [inputData]);
-    // ----------------
-    const initialData = [
-        { id: 1, name: '', value: '' },
-        { id: 2, name: '', value: '' },
-        { id: 3, name: '', value: '' },
-    ];
-    const [tableData, setTableData] = useState(initialData);
-    useEffect(() => {
-        const storedData = localStorage.getItem('tableData');
-        if (storedData) {
-            setTableData(JSON.parse(storedData));
-        }
-    }, []);
-    const handleInputChange = (e, id, field) => {
-        const newValue = e.target.value;
-        const updatedData = tableData.map(item => {
-            if (item.id === id) {
-                return { ...item, [field]: newValue };
-            }
-            return item;
-        });
-        setTableData(updatedData);
-        localStorage.setItem('tableData', JSON.stringify(updatedData));
-    };
-
-
+    const [selectedOption, setSelectedOption] = useState();
+    const [options, setOptions] = useState([]);
     // edit Table right
     const [worksData, setWorksData] = useState(data)
-    console.log('setWorksData', worksData);
     const onChangeInputTableRight = (e, idCV) => {
         const { name, value } = e.target
         const editDataTableRight = worksData.map((item) =>
@@ -224,8 +187,7 @@ export default function Dashboard({ auth }) {
         )
         setWorksData(editDataTableRight)
     }
-    const [workData, setWorkData] = useState(dataNew)
-    console.log("Log Workdata", workData);
+
     const handleSubmitAddWork = (e) => {
         e.preventDefault();
         setWorksData(prev => {
@@ -237,7 +199,6 @@ export default function Dashboard({ auth }) {
         setWorkData('')
 
     }
-
     const onChangeInput = (e, idCV) => {
         const { name, value } = e.target
         console.log('name', name)
@@ -247,11 +208,8 @@ export default function Dashboard({ auth }) {
             item.idCV === idCV && name ? { ...item, [name]: value } : item
         )
         setWorkData(editData)
-        console.log(idCV);
     }
 
-    const [selectedOption, setSelectedOption] = useState();
-    const [options, setOptions] = useState([]);
     useEffect(() => {
         setOptions(listWorker);
     }, []);
@@ -279,309 +237,276 @@ export default function Dashboard({ auth }) {
             const response = await fetch('api/web/works');
             const jsonData = await response.json();
             setWorkData(jsonData);
+
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
+
+    // -------------------------------
+    const [open, setOpen] = React.useState(false);
+    const [isFavorite, setIsFavorite] = React.useState(false);
+
+    const handleOpen = () => setOpen((cur) => !cur);
+    const handleIsFavorite = () => setIsFavorite((cur) => !cur);
     return (
         <AuthenticatedLayout
             user={auth.user}
         >
             <Head title="Trang Chủ" />
-            <h2>Input Table</h2>
-            <input
-                type="text"
-                placeholder="Name"
-                value={inputName}
-                onChange={handleInputNameChange}
-                className='border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none'
-            />
-            <input
-                type="text"
-                placeholder="Value"
-                value={inputValue}
-                onChange={handleInputValueChange}
-            />
-            <button onClick={handleAddInputRow}>Add Row</button>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {inputData.map(item => (
-                        <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>{item.name}</td>
-                            <td>{item.value}</td>
-                            <td>{item.value}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <h1>Editable Input Table</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {tableData.map(item => (
-                        <tr key={item.id}>
-                            <td>{item.id}</td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={item.name}
-                                    onChange={(e) => handleInputChange(e, item.id, 'name')}
-                                />
-                            </td>
-                            <td>
-                                <input
-                                    type="text"
-                                    value={item.value}
-                                    onChange={(e) => handleInputChange(e, item.id, 'value')}
-                                />
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-            <Card className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
-                {/* bang ben trai  */}
-                <table className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`} style={{ height: `${heightScreenTV}px` }}>
-                    <thead>
-                        <tr>
-                            {TABLE_HEAD.map((head) => (
-                                <th key={head} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50 w-fit">
-                                    {head}
-                                </th>
-                            ))}
-                        </tr>
+            <div className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'}>
+                <Card className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
+                    {/* bang ben trai  */}
+                    <table className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`} style={{ height: `300px` }}>
+                        <thead>
+                            <tr>
+                                {TABLE_HEAD.map((head) => (
+                                    <th key={head} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50 w-fit">
+                                        {head}
+                                    </th>
+                                ))}
+                            </tr>
 
-                    </thead>
-                    <tbody>
-                        {workData.map(({ id,work_content, street, phone_number, district, idCV, KTV }, index) => {
-                            const isLast = index === data.length - 1;
-                            const classes = isLast ? "w-fit " : "border-b border-blue-gray-50 w-fit";
-                            const classGeneral1 = "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
-                            return (
-                                // <input className='w-full' value={workData} />
-                                <tr key={id}>
-                                    <td className={classes}>
-                                        <input
-                                            name='yccv'
-                                            value={work_content}
-                                            type="text"
-                                            onChange={(e) => onChangeInput(e, idCV)}
-                                            placeholder="Yêu Cầu Công Việc"
-                                            className={classGeneral1}
+                        </thead>
+                        <tbody>
+                            {workData.map(({ id, work_content, street, phone_number, district, idCV, KTV, image_work_path }, index) => {
+                                const isLast = index === data.length - 1;
+                                const classes = isLast ? "w-fit " : "border-b border-blue-gray-50 w-fit";
+                                const classGeneral1 = "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
+                                // convert string to obj -------------------
+                                if (typeof image_work_path !== 'undefined') {
+                                    var url_img = image_work_path?.split(',');
+                                }
+                                return (
+                                    <tr key={id}>
+                                        <td className={classes}>
+                                            <input
+                                                name='yccv'
+                                                value={work_content}
+                                                type="text"
+                                                onChange={(e) => onChangeInput(e, idCV)}
+                                                placeholder="Yêu Cầu Công Việc"
+                                                className={classGeneral1}
 
-                                        />
-                                    </td>
-                                    <td className={`${classes} bg-blue-gray-50/50`}>
-                                        <input
-                                            name='diaChi'
-                                            type="text"
-                                            placeholder="Địa Chỉ"
-                                            className={classGeneral1}
-                                            value={street}
-                                            onChange={(e) => onChangeInput(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={classes}>
+                                            />
+                                        </td>
+                                        <td className={`${classes} bg-blue-gray-50/50`}>
+                                            <input
+                                                name='diaChi'
+                                                type="text"
+                                                placeholder="Địa Chỉ"
+                                                className={classGeneral1}
+                                                value={street}
+                                                onChange={(e) => onChangeInput(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={classes}>
 
-                                        <input
-                                            name='quan'
-                                            type="text"
-                                            placeholder="Quận"
-                                            className={`${classGeneral1} text-center w-12`}
-                                            value={district}
-                                            onChange={(e) => onChangeInput(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={classes}>
-                                        <input
-                                            name='sdt'
-                                            type="text"
-                                            placeholder="Số Điện Thoại"
-                                            className={`${classGeneral1} w-28 text-center`}
-                                            value={phone_number}
-                                            onChange={(e) => onChangeInput(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={`${classes} bg-blue-gray-50/50 w-20`}>
-                                        <input
-                                            name='KTV'
-                                            type="text"
-                                            placeholder="KTV"
-                                            className={`${classGeneral1} w-16 text-center`}
-                                            value={KTV}
-                                            onChange={(e) => onChangeInput(e, idCV)}
-                                        />
+                                            <input
+                                                name='quan'
+                                                type="text"
+                                                placeholder="Quận"
+                                                className={`${classGeneral1} text-center w-12`}
+                                                value={district}
+                                                onChange={(e) => onChangeInput(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={classes}>
+                                            <input
+                                                name='sdt'
+                                                type="text"
+                                                placeholder="Số Điện Thoại"
+                                                className={`${classGeneral1} w-28 text-center`}
+                                                value={phone_number}
+                                                onChange={(e) => onChangeInput(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={`${classes} bg-blue-gray-50/50 w-20`}>
+                                            <input
+                                                name='KTV'
+                                                type="text"
+                                                placeholder="KTV"
+                                                className={`${classGeneral1} w-16 text-center`}
+                                                value={KTV}
+                                                onChange={(e) => onChangeInput(e, idCV)}
+                                            />
 
-                                    </td>
-                                    <td className={`w-32 ${classes} `}>
-                                        <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
-                                        <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none ' onClick={e => handleSubmitAddWork(e, idCV)}><PaperAirplaneIcon className='w-4 h-4' /></Button>
-                                    </td>
+                                        </td>
+                                        <td className={`${classes} bg-blue-gray-50/50 w-20`}>
+                                            {
+                                                url_img?.map((item, index) => {
+                                                    if (item !== '') {
+                                                        return <div>
+                                                            <Avatar className="inline-block overflow-hidden transition-opacity cursor-pointer h-9 w-9 hover:opacity-90" src={item} alt="avatar" variant="rounded"  onClick={handleOpen}/>
+                                                            <Dialog size="xl" open={open} handler={handleOpen} className='w-1/2'>
+                                                                <DialogBody divider={true} className="p-2 text-center ">
+                                                                    <img key={index} src={item} alt="" className='inline-block w-1/2' />
+                                                                </DialogBody>
+                                                            </Dialog>
 
-                                </tr>
-                            );
-                        })}
+                                                        </div>
+                                                    }
+                                                })
+                                            }
+                                        </td>
+                                        <td className={`w-32 ${classes} `}>
+                                            <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
+                                            <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none ' onClick={e => handleSubmitAddWork(e, idCV)}><PaperAirplaneIcon className='w-4 h-4' /></Button>
+                                        </td>
 
-                    </tbody>
-                </table>
-                {/* bang ben phai */}
-                <table className="w-full text-left table-auto min-w-max ">
-                    <thead>
-                        <tr>
-                            {TABLE_HEAD_RIGHT.map((head) => (
-                                <th key={head} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50">
-                                    {head}
-                                </th>
-                            ))}
-                        </tr>
+                                    </tr>
+                                );
+                            })}
 
-                    </thead>
-                    <tbody>
-                        {worksData.map(({ yccv, diaChi, sdt, quan, idCV, dsChi, dsThu, BH, tinhTrangTT, soPhieuThu }, index) => {
-                            const isLast = index === data.length - 1;
-                            const classes = isLast ? "p-1 w-3 " : "p-1 border-b border-blue-gray-50 w-3";
-                            const classGeneral = "border  p-1 rounded border-blue-gray-50 bg-white text-black shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
-                            return (
-                                <tr key={index}>
+                        </tbody>
+                    </table>
+                </Card>
+                <Card className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
+                    {/* bang ben phai */}
+                    <table className="w-full text-left table-auto min-w-max " style={{ height: `${heightScreenTV}px` }}>
+                        <thead>
+                            <tr>
+                                {TABLE_HEAD_RIGHT.map((head) => (
+                                    <th key={head} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50">
+                                        {head}
+                                    </th>
+                                ))}
+                            </tr>
 
-                                    <td className={classes}>
-                                        <input
-                                            name='yccv'
-                                            value={yccv ?? ''}
-                                            type="text"
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            placeholder="Nội Dung Công Việc"
-                                            className={classGeneral}
+                        </thead>
+                        <tbody>
+                            {worksData.map(({ yccv, diaChi, sdt, quan, idCV, dsChi, dsThu, BH, tinhTrangTT, soPhieuThu }, index) => {
+                                const isLast = index === data.length - 1;
+                                const classes = isLast ? "p-1 w-3 " : "p-1 border-b border-blue-gray-50 w-3";
+                                const classGeneral = "border  p-1 rounded border-blue-gray-50 bg-white text-black shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
+                                return (
+                                    <tr key={index}>
 
-                                        />
-                                    </td>
-                                    <td className={classes}>
+                                        <td className={classes}>
+                                            <input
+                                                name='yccv'
+                                                value={yccv ?? ''}
+                                                type="text"
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                                placeholder="Nội Dung Công Việc"
+                                                className={classGeneral}
 
-                                        <input
-                                            name='BH'
-                                            type="text"
-                                            placeholder="BH"
-                                            className={`${classGeneral} text-center w-12`}
-                                            value={BH ?? ''}
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={`${classes} bg-blue-gray-50/50`}>
-                                        <input
-                                            name='diaChi'
-                                            type="text"
-                                            placeholder="Địa Chỉ"
-                                            className={classGeneral}
+                                            />
+                                        </td>
+                                        <td className={classes}>
 
-                                            value={diaChi ?? ''}
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                        />
-                                    </td>
+                                            <input
+                                                name='BH'
+                                                type="text"
+                                                placeholder="BH"
+                                                className={`${classGeneral} text-center w-12`}
+                                                value={BH ?? ''}
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={`${classes} bg-blue-gray-50/50`}>
+                                            <input
+                                                name='diaChi'
+                                                type="text"
+                                                placeholder="Địa Chỉ"
+                                                className={classGeneral}
 
-                                    <td className={classes}>
+                                                value={diaChi ?? ''}
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                            />
+                                        </td>
 
-                                        <input
-                                            name='quan'
-                                            type="text"
-                                            placeholder="Quận"
-                                            className={`${classGeneral} text-center w-12`}
-                                            value={quan ?? ''}
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={classes}>
+                                        <td className={classes}>
 
-                                        <input
-                                            name='tinhTrangTT'
-                                            type="text"
-                                            placeholder=""
-                                            className={`${classGeneral} text-center w-16`}
-                                            value={tinhTrangTT ?? ''}
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={classes}>
-                                        <input
-                                            name='sdt'
-                                            type="text"
-                                            placeholder="Số Điện Thoại"
-                                            className={`${classGeneral} w-28 text-center`}
-                                            value={sdt ?? ''}
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={`${classes} bg-blue-gray-50/50 w-20`}>
-                                        {/* <p>{listNV.map((itemNV)=>{
+                                            <input
+                                                name='quan'
+                                                type="text"
+                                                placeholder="Quận"
+                                                className={`${classGeneral} text-center w-12`}
+                                                value={quan ?? ''}
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={classes}>
+
+                                            <input
+                                                name='tinhTrangTT'
+                                                type="text"
+                                                placeholder=""
+                                                className={`${classGeneral} text-center w-16`}
+                                                value={tinhTrangTT ?? ''}
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={classes}>
+                                            <input
+                                                name='sdt'
+                                                type="text"
+                                                placeholder="Số Điện Thoại"
+                                                className={`${classGeneral} w-28 text-center`}
+                                                value={sdt ?? ''}
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={`${classes} bg-blue-gray-50/50 w-20`}>
+                                            {/* <p>{listNV.map((itemNV)=>{
                                             <p  value={itemNV.idTho}>{itemNV.tenNV}</p>
                                             console.log('nhan vien:',itemNV.tenNV);
                                         })}</p> */}
-                                        <select id={idCV} value={selectedOption} onChange={(e) => handleOptionChange(e, idCV)} className={classGeneral}>
-                                            <option value="">Chọn</option>
-                                            {options.map((option, index) => (
-                                                <option key={index} value={option.tenNV}>
-                                                    {option.tenNV}
-                                                </option>
-                                            ))}
-                                        </select>
+                                            <select id={idCV} value={selectedOption} onChange={(e) => handleOptionChange(e, idCV)} className={classGeneral}>
+                                                <option value="">Chọn</option>
+                                                {options.map((option, index) => (
+                                                    <option key={index} value={option.tenNV}>
+                                                        {option.tenNV}
+                                                    </option>
+                                                ))}
+                                            </select>
 
-                                    </td>
-                                    <td className={classes}>
-                                        <input
-                                            name='dsChi'
-                                            type="text"
-                                            placeholder="Chi"
-                                            className={`${classGeneral} w-28 text-center`}
-                                            value={dsChi}
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={classes}>
-                                        <input
-                                            name='dsThu'
-                                            type="text"
-                                            placeholder="Thu"
-                                            className={`${classGeneral} w-28 text-center`}
-                                            value={dsThu}
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                        />
-                                    </td>
-                                    <td className={classes}>
-                                        <input
-                                            name='soPhieuThu'
-                                            type="text"
-                                            placeholder="Thu"
-                                            className={`${classGeneral} w-28 text-center`}
-                                            value={soPhieuThu}
-                                            onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                        />
-                                    </td>
+                                        </td>
+                                        <td className={classes}>
+                                            <input
+                                                name='dsChi'
+                                                type="text"
+                                                placeholder="Chi"
+                                                className={`${classGeneral} w-28 text-center`}
+                                                value={dsChi}
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={classes}>
+                                            <input
+                                                name='dsThu'
+                                                type="text"
+                                                placeholder="Thu"
+                                                className={`${classGeneral} w-28 text-center`}
+                                                value={dsThu}
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                            />
+                                        </td>
+                                        <td className={classes}>
+                                            <input
+                                                name='soPhieuThu'
+                                                type="text"
+                                                placeholder="Thu"
+                                                className={`${classGeneral} w-28 text-center`}
+                                                value={soPhieuThu}
+                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
+                                            />
+                                        </td>
 
-                                    <td className={`w-32 ${classes} `}>
-                                        <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
-                                        <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none '><PaintBrushIcon className='w-4 h-4' /></Button>
+                                        <td className={`w-32 ${classes} `}>
+                                            <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
+                                            <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none '><PaintBrushIcon className='w-4 h-4' /></Button>
 
 
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </Card>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </Card>
+            </div>
             <div className='fixed bottom-2 right-2'>
                 <FloatingButton />
             </div>

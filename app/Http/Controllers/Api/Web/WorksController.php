@@ -23,20 +23,19 @@ class WorksController extends Controller
         // dd($request->all());
 
         $id = Work::where('phone_number','=',$request->phone_number)->where('work_content','=',$request->work_content)->value('id');
-        $files = [];
-        
+        $files = '';
+
         if($request->hasfile('image_work_path'))
 		{
 			foreach($request->file('image_work_path') as $file)
 			{
 			    $name = $id.'-'.time().rand(10,100).'.'.$file->extension();
                 $file->move('assets/images/work', $name);
-			    $files[] = 'assets/images/work/'.$name;
+			    $files = $files.'assets/images/work/'.$name.',';
             }
-            $serializedArr = json_encode($files);
+            // $serializedArr = json_encode($files);
             DB::table('works')->where('works.id', '=', $id)-> update(['works.image_work_path'=>$files]);
 			// Work::where('id','=',$id)->update(['image_work_path'=>"'".$serializedArr."'"]);
-
             return response()->json('Add image Done');
 		}
         return response()->json('Create Work Done');

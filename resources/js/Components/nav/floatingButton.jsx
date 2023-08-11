@@ -93,8 +93,6 @@ function FloatingButton() {
         formData1.append("from_cus",formData.from_cus);
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
-        // // formData.append("image_work_path", document.getElementById('hinh').file);
-        // // console.log("image_work_path", formData.file);
         // console.log("form data date_book", formData.date_book);
         // console.log("form data formData 1 ---------",  formData1);
         try {
