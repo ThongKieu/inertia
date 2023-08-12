@@ -1,4 +1,4 @@
-import { Fragment, useState,useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import {
     Button,
     Dialog,
@@ -92,10 +92,7 @@ function FloatingButton() {
         status_cus: 1,
         from_cus: 1,
         flag_status: 1,
-        // image_work_path:[]
     });
-    // console.log('test selectedFiles',selectedFiles);
-    // console.log('test formData truoc khi gui',formData);
     const handleChange = (e) => {
         const { name, value } = e.target;
         // console.log('name', name);
@@ -112,20 +109,30 @@ function FloatingButton() {
         setPreviewImages(previews);
     };
 
+    // ---------------------- select quan --------------------------------
+    // const [selectedOptionDistrict, setSelectedOptionDistrict] = useState('');
+    const [optionsDistrict, setOptionsDistrict] = useState([]);
+    const [selectedOption, setSelectedOption] = useState('');
+
+    const handleOptionChangeDistrict = (event) => {
+        setSelectedOption(event.target.value);
+    };
+    useEffect(() => {
+        setOptionsDistrict(quanHuyen);
+    }, []);
+
+
+
     const handleAddWork = async (e) => {
         e.preventDefault();
 
         const formData1 = new FormData();
-        // selectedFiles.forEach((file) => {
-        //     formData1.append('image_work_path', file);
-
-        // });
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append('image_work_path[]', selectedFiles[i]);
         }
-        formData1.append("work_content", formData.work_content);s
+        formData1.append("work_content", formData.work_content);
         formData1.append("date_book", formData.date_book);
-        formData1.append("district", selectedOptionDistrict);
+        formData1.append("district", selectedOption);
         formData1.append("phone_number", formData.phone_number);
         formData1.append("kind_work", formData.kind_work);
         formData1.append("status_cus", formData.status_cus);
@@ -133,8 +140,6 @@ function FloatingButton() {
         formData1.append("from_cus", formData.from_cus);
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
-        // console.log("form data date_book", formData.date_book);
-        // console.log("form data formData 1 ---------",  formData1);
         try {
             console.log("fhihihihihihihihi", formData1);
 
@@ -158,17 +163,6 @@ function FloatingButton() {
         } catch (error) {
             console.log(error);
         }
-    };
-    const [selectedOptionDistrict, setSelectedOptionDistrict] = useState();
-    const [optionsDistrict, setOptionsDistrict] = useState([]);
-    useEffect(() => {
-        setOptionsDistrict(quanHuyen);
-    }, []);
-
-    const handleOptionChangeDistrict = (e, idQuan) => {
-
-        setSelectedOptionDistrict(e.target.value);
-        console.log('Kiem Tra id Quan',idQuan);
     };
     return (
         <Fragment>
@@ -203,20 +197,20 @@ function FloatingButton() {
                                     onChange={handleChange} />
                             </div>
                             <div className="flex items-center gap-4 my-4">
+
                                 <Input label="Địa Chỉ" className="shadow-none"
                                     id="street"
                                     name="street" value={formData.street} onChange={handleChange} />
-                                <Input label="Quận" className="shadow-none" id="district"
-                                    name="district" value={formData.district} onChange={handleChange} />
-                                    <Select label="Chọn Quận" value={selectedOptionDistrict} onChange={(e) => {if (typeof idQuan !=='undefined') {
-                                                handleOptionChangeDistrict(e, idQuan)
-                                            }}} >
-                                                {optionsDistrict.map((optionDistrict, index) => (
-                                                    <Option key={index} value={optionDistrict.tenQuan}>
-                                                        {optionDistrict.tenQuan}
-                                                    </Option>
-                                                ))}
-                                            </Select>
+                                {/* <Input label="Quận" className="shadow-none" id="district"
+                                    name="district" value={formData.district} onChange={handleChange} /> */}
+
+                                <select value={selectedOption} onChange={handleOptionChangeDistrict} className="border rounded-lg">
+                                {optionsDistrict.map((optionDistrict, index) => (
+                                        <option key={index} value={optionDistrict.tenVietTat}>
+                                            {optionDistrict.tenQuan}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="my-2">
@@ -227,6 +221,7 @@ function FloatingButton() {
 
                             <div className="flex items-center gap-4 my-4">
                                 <Input
+                                    type="text"
                                     label="Tên KH "
                                     value={formData.name_cus}
                                     onChange={handleChange}
