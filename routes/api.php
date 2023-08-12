@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('web')->group(function () {
     Route::apiResource('works',WorksController::class);
     Route::apiResource('workers',WorkersController::class);
+    Route::apiResource('distrist',WorkersController::class);
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

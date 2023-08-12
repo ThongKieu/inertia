@@ -123,7 +123,7 @@ function FloatingButton() {
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append('image_work_path[]', selectedFiles[i]);
         }
-        formData1.append("work_content", formData.work_content);s
+        formData1.append("work_content", formData.work_content);
         formData1.append("date_book", formData.date_book);
         formData1.append("district", selectedOptionDistrict);
         formData1.append("phone_number", formData.phone_number);
@@ -206,8 +206,8 @@ function FloatingButton() {
                                 <Input label="Địa Chỉ" className="shadow-none"
                                     id="street"
                                     name="street" value={formData.street} onChange={handleChange} />
-                                <Input label="Quận" className="shadow-none" id="district"
-                                    name="district" value={formData.district} onChange={handleChange} />
+                                {/* <Input label="Quận" className="shadow-none" id="district"
+                                    name="district" value={formData.district} onChange={handleChange} /> */}
                                     <Select label="Chọn Quận" value={selectedOptionDistrict} onChange={(e) => {if (typeof idQuan !=='undefined') {
                                                 handleOptionChangeDistrict(e, idQuan)
                                             }}} >
