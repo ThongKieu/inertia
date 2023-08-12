@@ -1,11 +1,11 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState,useEffect } from "react";
 import {
     Button,
     Dialog,
     DialogHeader,
     DialogBody,
     DialogFooter,
-    Input, Radio
+    Input, Radio, Select, Option
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 function formatCardNumber(value) {
@@ -24,6 +24,49 @@ function formatCardNumber(value) {
     }
 }
 
+// ------------------------ data quan ----------------------------------
+const quanHuyen = [
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q1',
+        tenQuan: 'Quận 1'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q2',
+        tenQuan: 'Quận 2'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q3',
+        tenQuan: 'Quận 3'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q4',
+        tenQuan: 'Quận 4'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q5',
+        tenQuan: 'Quận 5'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q6',
+        tenQuan: 'Quận 6'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q7',
+        tenQuan: 'Quận 7'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q8',
+        tenQuan: 'Quận 8'
+    },
+]
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -35,7 +78,6 @@ function formatExpires(value) {
 function FloatingButton() {
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
-
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewImages, setPreviewImages] = useState([]);
     const [formData, setFormData] = useState({
@@ -80,23 +122,21 @@ function FloatingButton() {
         // });
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append('image_work_path[]', selectedFiles[i]);
-            // console.log(`selectedFiles[${i}]`,selectedFiles[i]);
         }
-        // console.log(`selectedFiles1111`,selectedFiles);
-        formData1.append("work_content", formData.work_content);
+        formData1.append("work_content", formData.work_content);s
         formData1.append("date_book", formData.date_book);
-        formData1.append("district",formData.district);
+        formData1.append("district", selectedOptionDistrict);
         formData1.append("phone_number", formData.phone_number);
         formData1.append("kind_work", formData.kind_work);
-        formData1.append("status_cus",formData.status_cus);
-        formData1.append("flag_status",formData.flag_status);
-        formData1.append("from_cus",formData.from_cus);
+        formData1.append("status_cus", formData.status_cus);
+        formData1.append("flag_status", formData.flag_status);
+        formData1.append("from_cus", formData.from_cus);
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
         // console.log("form data date_book", formData.date_book);
         // console.log("form data formData 1 ---------",  formData1);
         try {
-        console.log("fhihihihihihihihi", formData1);
+            console.log("fhihihihihihihihi", formData1);
 
             const response = await fetch('api/web/works', {
                 method: 'POST',
@@ -107,17 +147,28 @@ function FloatingButton() {
                 mode: 'no-cors',
                 body: formData1,
             });
-            console.log('Files uploaded successfully',response);
+            console.log('Files uploaded successfully', response);
             if (response.status !== 200) {
                 const err = new Error("Error")
                 throw err;
-              }
-              const dataReply = await response.json()
-            //   window.location.reload();
-              console.log(dataReply);
-            } catch (error) {
-              console.log(error);
             }
+            const dataReply = await response.json()
+            //   window.location.reload();
+            console.log(dataReply);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const [selectedOptionDistrict, setSelectedOptionDistrict] = useState();
+    const [optionsDistrict, setOptionsDistrict] = useState([]);
+    useEffect(() => {
+        setOptionsDistrict(quanHuyen);
+    }, []);
+
+    const handleOptionChangeDistrict = (e, idQuan) => {
+
+        setSelectedOptionDistrict(e.target.value);
+        console.log('Kiem Tra id Quan',idQuan);
     };
     return (
         <Fragment>
@@ -132,7 +183,7 @@ function FloatingButton() {
                     <XMarkIcon className="w-5 h-5 mr-3 cursor-pointer" onClick={handleOpen} />
                 </div>
                 <form className="flex flex-col"  >
-                <DialogBody divider>
+                    <DialogBody divider>
 
                         <div className="my-1">
                             <div className="my-2">
@@ -157,6 +208,15 @@ function FloatingButton() {
                                     name="street" value={formData.street} onChange={handleChange} />
                                 <Input label="Quận" className="shadow-none" id="district"
                                     name="district" value={formData.district} onChange={handleChange} />
+                                    <Select label="Chọn Quận" value={selectedOptionDistrict} onChange={(e) => {if (typeof idQuan !=='undefined') {
+                                                handleOptionChangeDistrict(e, idQuan)
+                                            }}} >
+                                                {optionsDistrict.map((optionDistrict, index) => (
+                                                    <Option key={index} value={optionDistrict.tenQuan}>
+                                                        {optionDistrict.tenQuan}
+                                                    </Option>
+                                                ))}
+                                            </Select>
                             </div>
 
                             <div className="my-2">
@@ -242,7 +302,7 @@ function FloatingButton() {
                         </div>
 
 
-                </DialogBody>
+                    </DialogBody>
                     <DialogFooter className="justify-center space-x-2">
                         <Button size="lg" className="w-11/12" onClick={handleAddWork}>Thêm</Button>
                     </DialogFooter>

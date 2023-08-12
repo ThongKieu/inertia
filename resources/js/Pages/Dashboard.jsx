@@ -132,9 +132,10 @@ const data = [
         tinhTrangTT: 'chua tt'
     },
 ];
+// ------------------data thong tin tho ---------------
 const listWorker = [
     {
-        idTho: 1,
+        idTho: Math.floor(Math.random() * 1000),
         maNV: "A03",
         tenNV: "Có",
         hoVaDem: "Nguyen Xuan",
@@ -142,14 +143,14 @@ const listWorker = [
 
     },
     {
-        idTho: 2,
+        idTho: Math.floor(Math.random() * 1000),
         maNV: "A04",
         tenNV: "Tiền",
         hoVaDem: "Nguyen Xuan",
         linhVuc: "DN"
 
     }, {
-        idTho: 3,
+        idTho: Math.floor(Math.random() * 1000),
         maNV: "A05",
         tenNV: "Nhạc",
         hoVaDem: "Nguyen Xuan",
@@ -157,7 +158,7 @@ const listWorker = [
 
     },
     {
-        idTho: 4,
+        idTho: Math.floor(Math.random() * 1000),
         maNV: "A06",
         tenNV: "Thông",
         hoVaDem: "Nguyen Xuan",
@@ -165,7 +166,7 @@ const listWorker = [
 
     },
     {
-        idTho: 5,
+        idTho: Math.floor(Math.random() * 1000),
         maNV: "A07",
         tenNV: "Thống",
         hoVaDem: "Nguyen Xuan",
@@ -173,11 +174,51 @@ const listWorker = [
 
     }
 ]
+// ------------------------ data quan ----------------------------------
+const quanHuyen = [
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q1',
+        tenQuan: 'Quận 1'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q2',
+        tenQuan: 'Quận 2'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q3',
+        tenQuan: 'Quận 3'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q4',
+        tenQuan: 'Quận 4'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q5',
+        tenQuan: 'Quận 5'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q6',
+        tenQuan: 'Quận 6'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q7',
+        tenQuan: 'Quận 7'
+    },
+    {
+        idQuan: Math.floor(Math.random() * 1000),
+        tenVietTat: 'q8',
+        tenQuan: 'Quận 8'
+    },
+]
 export default function Dashboard({ auth }) {
     const [workData, setWorkData] = useState(dataNew)
-
-    const [selectedOption, setSelectedOption] = useState();
-    const [options, setOptions] = useState([]);
     // edit Table right
     const [worksData, setWorksData] = useState(data)
     const onChangeInputTableRight = (e, idCV) => {
@@ -209,25 +250,38 @@ export default function Dashboard({ auth }) {
         )
         setWorkData(editData)
     }
-
+    // ------------------option select thong tin tho  ---------------
+    const [selectedOption, setSelectedOption] = useState();
+    const [options, setOptions] = useState([]);
     useEffect(() => {
         setOptions(listWorker);
     }, []);
 
     const handleOptionChange = (e, idTho) => {
-        console.log(idTho);
-        console.log("selected", selectedOption);
+
+        console.log('Kiem Tra id Quan',idTho);
         setSelectedOption(e.target.value);
     };
+
+    // ------------------option select quan huyen  ---------------
+    const [selectedOptionDistrict, setSelectedOptionDistrict] = useState();
+    const [optionsDistrict, setOptionsDistrict] = useState([]);
+    useEffect(() => {
+        setOptionsDistrict(quanHuyen);
+    }, []);
+
+    const handleOptionChangeDistrict = (e, idQuan) => {
+        console.log('Kiem Tra id Quan',idQuan);
+        setSelectedOptionDistrict(e.target.value);
+    };
+    //  ---------------------------------- reponve height table ---------------
     const [screenSize, setScreenSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight - 100,
-
     });
-    // setScreenSize(height);
     var heightScreenTV = screenSize.height;
     console.log('kich thuoc', heightScreenTV);
-
+    // ---------------------fetch api left table -------------------------------------
     useEffect(() => {
         fetchData()
     }, []);
@@ -243,12 +297,10 @@ export default function Dashboard({ auth }) {
         }
     };
 
-    // -------------------------------
+    // -------------------open dialog------------
     const [open, setOpen] = React.useState(false);
-    const [isFavorite, setIsFavorite] = React.useState(false);
-
     const handleOpen = () => setOpen((cur) => !cur);
-    const handleIsFavorite = () => setIsFavorite((cur) => !cur);
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -269,7 +321,7 @@ export default function Dashboard({ auth }) {
 
                         </thead>
                         <tbody>
-                            {workData.map(({ id, work_content, street, phone_number, district, idCV, KTV, image_work_path }, index) => {
+                            {workData.map(({ id, work_content, street, phone_number, district, idCV, KTV, idQuan,image_work_path }, index) => {
                                 const isLast = index === data.length - 1;
                                 const classes = isLast ? "w-fit " : "border-b border-blue-gray-50 w-fit";
                                 const classGeneral1 = "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
@@ -321,35 +373,35 @@ export default function Dashboard({ auth }) {
                                                 onChange={(e) => onChangeInput(e, idCV)}
                                             />
                                         </td>
-                                        <td className={`${classes} bg-blue-gray-50/50 w-20`}>
-                                            <input
-                                                name='KTV'
-                                                type="text"
-                                                placeholder="KTV"
-                                                className={`${classGeneral1} w-16 text-center`}
-                                                value={KTV}
-                                                onChange={(e) => onChangeInput(e, idCV)}
-                                            />
-
+                                        <td className={`${classes} bg-blue-gray-50/50 w-20  `}>
+                                            <select id={idCV} value={selectedOptionDistrict} onChange={(e) => {if (typeof idQuan !=='undefined') {
+                                                handleOptionChangeDistrict(e, idQuan)
+                                            }}} className={classGeneral1}>
+                                                <option value="">Chọn</option>
+                                                {optionsDistrict.map((optionDistrict, index) => (
+                                                    <option key={index} value={optionDistrict.tenQuan}>
+                                                        {optionDistrict.tenQuan}
+                                                    </option>
+                                                ))}
+                                            </select>
                                         </td>
-                                        <td className={`${classes} bg-blue-gray-50/50 w-20`}>
+                                        <td className={`${classes} bg-blue-gray-50/50 w-20 grid grid-cols-2 gap-1 items-center`}>
                                             {
                                                 url_img?.map((item, index) => {
                                                     if (item !== '') {
-                                                        return <div>
-                                                            <Avatar className="inline-block overflow-hidden transition-opacity cursor-pointer h-9 w-9 hover:opacity-90" src={item} alt="avatar" variant="rounded"  onClick={handleOpen}/>
+                                                        return <div >
+                                                            <Avatar className="overflow-hidden transition-opacity cursor-pointer h-9 w-9 hover:opacity-90" src={item} alt="avatar" variant="rounded" onClick={handleOpen} />
                                                             <Dialog size="xl" open={open} handler={handleOpen} className='w-1/2'>
                                                                 <DialogBody divider={true} className="p-2 text-center ">
                                                                     <img key={index} src={item} alt="" className='inline-block w-1/2' />
                                                                 </DialogBody>
                                                             </Dialog>
-
                                                         </div>
                                                     }
                                                 })
                                             }
                                         </td>
-                                        <td className={`w-32 ${classes} `}>
+                                        <td className={`w-32 ${classes}`} style={{ height: '10px' }} >
                                             <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
                                             <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none ' onClick={e => handleSubmitAddWork(e, idCV)}><PaperAirplaneIcon className='w-4 h-4' /></Button>
                                         </td>
@@ -449,11 +501,12 @@ export default function Dashboard({ auth }) {
                                             />
                                         </td>
                                         <td className={`${classes} bg-blue-gray-50/50 w-20`}>
-                                            {/* <p>{listNV.map((itemNV)=>{
-                                            <p  value={itemNV.idTho}>{itemNV.tenNV}</p>
-                                            console.log('nhan vien:',itemNV.tenNV);
-                                        })}</p> */}
-                                            <select id={idCV} value={selectedOption} onChange={(e) => handleOptionChange(e, idCV)} className={classGeneral}>
+
+                                            <select id={idCV} value={selectedOption} onChange={(e) => {
+                                                if (typeof idTho !== 'undefined') {
+                                                    handleOptionChange(e, idTho)
+                                                }
+                                            }} className={classGeneral}>
                                                 <option value="">Chọn</option>
                                                 {options.map((option, index) => (
                                                     <option key={index} value={option.tenNV}>
