@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Distrists;
+use App\Models\District;
 use Illuminate\Http\Request;
 
 class DistristController extends Controller
@@ -14,7 +14,8 @@ class DistristController extends Controller
     public function index()
     {
         //
-        return response()->json(Distrists::all());
+        $data = District::all();
+        return response()->json($data);
     }
 
     /**
@@ -34,7 +35,7 @@ class DistristController extends Controller
         $vadilate = $request->validate([
             'dis_name'=>'required|max:200', 'dis_sort_name'=>'required|max 50'
         ]);
-        $ne = new Distrists([
+        $ne = new District([
             'dis_name'=>$request->dis_name, 'dis_sort_name'=>$request->dis_sort_name
         ]);
         $ne ->save();
@@ -68,7 +69,7 @@ class DistristController extends Controller
     public function update(Request $request, string $id)
     {
         //
-        Distrists::where('id','=',$id)->update(['dis_name'=>$request->dis_name,'dis_sort_name'=>$request->dis_sort_name]);
+        District::where('id','=',$id)->update(['dis_name'=>$request->dis_name,'dis_sort_name'=>$request->dis_sort_name]);
         return response()->json('Update Distrist Done');
     }
 

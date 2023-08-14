@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\DistristController;
 use App\Http\Controllers\Api\Web\WorksController;
 use App\Http\Controllers\Api\Web\WorkersController;
 
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('web')->group(function () {
     Route::apiResource('works',WorksController::class);
     Route::apiResource('workers',WorkersController::class);
-    Route::apiResource('distrist',WorkersController::class);
+    Route::apiResource('district',DistristController::class);
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
