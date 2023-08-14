@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\District;
 use Illuminate\Http\Request;
 
-class DistristController extends Controller
+class DistrictController extends Controller
 {
     /**
      * Display a listing of the resource.
