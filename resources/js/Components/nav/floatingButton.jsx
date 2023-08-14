@@ -75,7 +75,17 @@ function formatExpires(value) {
         .replace(/^0{1,}/g, "0")
         .replace(/^([0-1]{1}[0-9]{1})([0-9]{1,2}).\*/g, "$1/$2");
 }
+function formatDateForInput(date) {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    return `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
+}
 function FloatingButton() {
+
+// Lấy thông tin ngày, tháng và năm từ đối tượng Date
+
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -84,7 +94,7 @@ function FloatingButton() {
         work_content: '',
         date_book: '',
         phone_number: '',
-        district: '',
+        district: 'Khác',
         work_note: '',
         street: '',
         members_read: 1,
@@ -122,7 +132,6 @@ function FloatingButton() {
     }, []);
 
 
-
     const handleAddWork = async (e) => {
         e.preventDefault();
 
@@ -131,7 +140,7 @@ function FloatingButton() {
             formData1.append('image_work_path[]', selectedFiles[i]);
         }
         formData1.append("work_content", formData.work_content);
-        formData1.append("date_book", formData.date_book);
+        formData1.append("date_book", inputDate);
         formData1.append("district", selectedOption);
         formData1.append("phone_number", formData.phone_number);
         formData1.append("kind_work", formData.kind_work);
@@ -162,6 +171,18 @@ function FloatingButton() {
             console.log(dataReply);
         } catch (error) {
             console.log(error);
+        }
+    };
+    const [inputDate, setInputDate] = useState('');
+
+    const handleInputChange = (event) => {
+        setInputDate(event.target.value);
+    };
+
+    const handleInputBlur = () => {
+        const parsedDate = new Date(inputDate);
+        if (!isNaN(parsedDate)) {
+            setInputDate(formatDateForInput(parsedDate));
         }
     };
     return (
@@ -204,7 +225,7 @@ function FloatingButton() {
                                 {/* <Input label="Quận" className="shadow-none" id="district"
                                     name="district" value={formData.district} onChange={handleChange} /> */}
 
-                                <select value={selectedOption} onChange={handleOptionChangeDistrict} className="border rounded-lg">
+                                <select value={selectedOption} onChange={handleOptionChangeDistrict} className="border rounded-lg" >
                                 {optionsDistrict.map((optionDistrict, index) => (
                                         <option key={index} value={optionDistrict.tenVietTat}>
                                             {optionDistrict.tenQuan}
@@ -229,13 +250,25 @@ function FloatingButton() {
                                     name="name_cus"
                                     containerProps={{ className: "min-w-[72px]" }} className="shadow-none"
                                 />
+                                {/* <Input
+                                    label="Ngày Làm"
+                                    maxLength={4}
+                                    id="date_book"
+                                    type="date"
+                                    name="date_book"
+                                    containerProps={{ className: "min-w-[72px]" }} className="shadow-none" onChange={handleChange}
+                                    value={formData.date_book}
+                                /> */}
                                 <Input
                                     label="Ngày Làm"
                                     maxLength={4}
                                     id="date_book"
+                                    type="date"
                                     name="date_book"
-                                    containerProps={{ className: "min-w-[72px]" }} className="shadow-none" onChange={handleChange}
-                                    value={formData.date_book}
+                                    containerProps={{ className: "min-w-[72px]" }} className="shadow-none"
+                                    value={inputDate}
+                                    onChange={handleInputChange}
+                                    onBlur={handleInputBlur}
                                 />
                             </div>
                             <div className="items-center justify-center gap-4 my-4 text-xs lg:flex">

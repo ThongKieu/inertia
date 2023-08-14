@@ -14,7 +14,10 @@ class DistristController extends Controller
     public function index()
     {
         //
-        return response()->json(Distrists::all());
+        $data = Distrists::all();
+        dd($data);
+        return response()->json($data);
+
     }
 
     /**
@@ -42,7 +45,7 @@ class DistristController extends Controller
         {
             return response()->json('Add new Distrist done');
         }
-        else 
+        else
             return response()->json(' Add distrist failse');
     }
 

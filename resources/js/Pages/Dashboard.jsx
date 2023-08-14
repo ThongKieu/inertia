@@ -222,7 +222,7 @@ export default function Dashboard({ auth }) {
         )
         setWorksData(editDataTableRight)
     }
-
+    // them lich bang ben trai ------------------------------
     const handleSubmitAddWork = (e) => {
         e.preventDefault();
         setWorksData(prev => {
@@ -234,6 +234,13 @@ export default function Dashboard({ auth }) {
         setWorkData('')
 
     }
+    // xoa lich bang ben trai ------------------------------
+    const handleDeleteRow = (idCV) => {
+        const updatedTableData = workData.filter(item => item.idCV !== idCV);
+        setWorkData(updatedTableData);
+        console.log('kiem tra workdata Update ',updatedTableData);
+    };
+    // -----------------------------------------
     const onChangeInput = (e, idCV) => {
         const { name, value } = e.target
         console.log('name', name)
@@ -376,7 +383,7 @@ export default function Dashboard({ auth }) {
                     }
                 </td>
                 <td className={`w-32 ${classes}`} style={{ height: '10px' }} >
-                    <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
+                    <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none' onClick={(e)=>{handleDeleteRow(e, idCV)}}><TrashIcon className='w-4 h-4' /> </Button>
                     <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none ' onClick={e => handleSubmitAddWork(e, idCV)}><PaperAirplaneIcon className='w-4 h-4' /></Button>
                 </td>
             </tr>
