@@ -32,7 +32,7 @@ use Inertia\Inertia;
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {return Inertia::render('Dashboard');})->name('dashboard');
     Route::prefix('admin')->group(function(){
-        Route::get('/',function(){return Inertia::render('Admin/HomeAdmin');})->name('admin');
+        Route::get('/',function(){return Inertia::render('Admin/HomeAdmin/HomeAdmin');})->name('admin');
         Route::get('/worker',function(){return Inertia::render('Admin/Worker/Worker');})->name('Worker');
     });
     Route::get('/distrist', function () {return Inertia::render('Distrist');})->name('distrist');
