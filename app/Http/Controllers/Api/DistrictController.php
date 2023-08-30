@@ -43,7 +43,7 @@ class DistrictController extends Controller
         {
             return response()->json('Add new Distrist done');
         }
-        else 
+        else
             return response()->json(' Add distrist failse');
     }
 

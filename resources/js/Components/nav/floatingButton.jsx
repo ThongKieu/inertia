@@ -1,4 +1,4 @@
-import { Fragment, useState,useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import {
     Button,
     Dialog,
@@ -23,50 +23,9 @@ function formatCardNumber(value) {
         return value;
     }
 }
-
-// ------------------------ data quan ----------------------------------
-const quanHuyen = [
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q1',
-        tenQuan: 'Quận 1'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q2',
-        tenQuan: 'Quận 2'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q3',
-        tenQuan: 'Quận 3'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q4',
-        tenQuan: 'Quận 4'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q5',
-        tenQuan: 'Quận 5'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q6',
-        tenQuan: 'Quận 6'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q7',
-        tenQuan: 'Quận 7'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q8',
-        tenQuan: 'Quận 8'
-    },
-]
+// --------------------API ---------
+ const url_API = 'api/web/works';
+ const url_API_District = 'api/web/district';
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -75,7 +34,17 @@ function formatExpires(value) {
         .replace(/^0{1,}/g, "0")
         .replace(/^([0-1]{1}[0-9]{1})([0-9]{1,2}).\*/g, "$1/$2");
 }
+function formatDateForInput(date) {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    return `${day < 10 ? '0' : ''}${day}-${month < 10 ? '0' : ''}${month}-${year}`;
+}
 function FloatingButton() {
+
+// Lấy thông tin ngày, tháng và năm từ đối tượng Date
+
     const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen(!open);
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -84,7 +53,7 @@ function FloatingButton() {
         work_content: '',
         date_book: '',
         phone_number: '',
-        district: '',
+        district: 'Khác',
         work_note: '',
         street: '',
         members_read: 1,
@@ -92,10 +61,7 @@ function FloatingButton() {
         status_cus: 1,
         from_cus: 1,
         flag_status: 1,
-        // image_work_path:[]
     });
-    // console.log('test selectedFiles',selectedFiles);
-    // console.log('test formData truoc khi gui',formData);
     const handleChange = (e) => {
         const { name, value } = e.target;
         // console.log('name', name);
@@ -112,20 +78,39 @@ function FloatingButton() {
         setPreviewImages(previews);
     };
 
+    // ---------------------- select quan --------------------------------
+    // const [selectedOptionDistrict, setSelectedOptionDistrict] = useState('');
+    const [optionsDistrict, setOptionsDistrict] = useState([]);
+    const [selectedOption, setSelectedOption] = useState('');
+
+    const handleOptionChangeDistrict = (event) => {
+        setSelectedOption(event.target.value);
+    };
+    useEffect(() => {
+        fetchData()
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch(url_API_District);
+            const jsonData = await response.json();
+            setOptionsDistrict(jsonData);
+            console.log(jsonData);
+
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
     const handleAddWork = async (e) => {
         e.preventDefault();
 
         const formData1 = new FormData();
-        // selectedFiles.forEach((file) => {
-        //     formData1.append('image_work_path', file);
-
-        // });
         for (let i = 0; i < selectedFiles.length; i++) {
             formData1.append('image_work_path[]', selectedFiles[i]);
         }
         formData1.append("work_content", formData.work_content);
-        formData1.append("date_book", formData.date_book);
-        formData1.append("district", selectedOptionDistrict);
+        formData1.append("date_book", inputDate);
+        formData1.append("district", selectedOption);
         formData1.append("phone_number", formData.phone_number);
         formData1.append("kind_work", formData.kind_work);
         formData1.append("status_cus", formData.status_cus);
@@ -133,12 +118,10 @@ function FloatingButton() {
         formData1.append("from_cus", formData.from_cus);
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
-        // console.log("form data date_book", formData.date_book);
-        // console.log("form data formData 1 ---------",  formData1);
         try {
             console.log("fhihihihihihihihi", formData1);
 
-            const response = await fetch('api/web/works', {
+            const response = await fetch(url_API, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -159,16 +142,17 @@ function FloatingButton() {
             console.log(error);
         }
     };
-    const [selectedOptionDistrict, setSelectedOptionDistrict] = useState();
-    const [optionsDistrict, setOptionsDistrict] = useState([]);
-    useEffect(() => {
-        setOptionsDistrict(quanHuyen);
-    }, []);
+    const [inputDate, setInputDate] = useState('');
 
-    const handleOptionChangeDistrict = (e, idQuan) => {
+    const handleInputChange = (event) => {
+        setInputDate(event.target.value);
+    };
 
-        setSelectedOptionDistrict(e.target.value);
-        console.log('Kiem Tra id Quan',idQuan);
+    const handleInputBlur = () => {
+        const parsedDate = new Date(inputDate);
+        if (!isNaN(parsedDate)) {
+            setInputDate(formatDateForInput(parsedDate));
+        }
     };
     return (
         <Fragment>
@@ -203,20 +187,20 @@ function FloatingButton() {
                                     onChange={handleChange} />
                             </div>
                             <div className="flex items-center gap-4 my-4">
+
                                 <Input label="Địa Chỉ" className="shadow-none"
                                     id="street"
                                     name="street" value={formData.street} onChange={handleChange} />
                                 {/* <Input label="Quận" className="shadow-none" id="district"
                                     name="district" value={formData.district} onChange={handleChange} /> */}
-                                    <Select label="Chọn Quận" value={selectedOptionDistrict} onChange={(e) => {if (typeof idQuan !=='undefined') {
-                                                handleOptionChangeDistrict(e, idQuan)
-                                            }}} >
-                                                {optionsDistrict.map((optionDistrict, index) => (
-                                                    <Option key={index} value={optionDistrict.tenQuan}>
-                                                        {optionDistrict.tenQuan}
-                                                    </Option>
-                                                ))}
-                                            </Select>
+
+                                <select value={selectedOption} onChange={handleOptionChangeDistrict} className="border rounded-lg" >
+                                {optionsDistrict.map((optionDistrict, index) => (
+                                        <option key={index} value={optionDistrict.dis_sort_name}>
+                                            {optionDistrict.dis_name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="my-2">
@@ -227,6 +211,7 @@ function FloatingButton() {
 
                             <div className="flex items-center gap-4 my-4">
                                 <Input
+                                    type="text"
                                     label="Tên KH "
                                     value={formData.name_cus}
                                     onChange={handleChange}
@@ -234,13 +219,25 @@ function FloatingButton() {
                                     name="name_cus"
                                     containerProps={{ className: "min-w-[72px]" }} className="shadow-none"
                                 />
+                                {/* <Input
+                                    label="Ngày Làm"
+                                    maxLength={4}
+                                    id="date_book"
+                                    type="date"
+                                    name="date_book"
+                                    containerProps={{ className: "min-w-[72px]" }} className="shadow-none" onChange={handleChange}
+                                    value={formData.date_book}
+                                /> */}
                                 <Input
                                     label="Ngày Làm"
                                     maxLength={4}
                                     id="date_book"
+                                    type="date"
                                     name="date_book"
-                                    containerProps={{ className: "min-w-[72px]" }} className="shadow-none" onChange={handleChange}
-                                    value={formData.date_book}
+                                    containerProps={{ className: "min-w-[72px]" }} className="shadow-none"
+                                    value={inputDate}
+                                    onChange={handleInputChange}
+                                    onBlur={handleInputBlur}
                                 />
                             </div>
                             <div className="items-center justify-center gap-4 my-4 text-xs lg:flex">

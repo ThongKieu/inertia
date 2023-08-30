@@ -21,7 +21,7 @@ const TABLE_HEAD = ["Yêu Cầu Công Việc", "Địa Chỉ", "Quận", "Số �
 const TABLE_HEAD_RIGHT = ["Nội Dung Công Việc", "BH", "Địa Chỉ KH", "KV", "Thanh Toán", "SDT", "KTV", "Chi", "Thu", "Số Phiếu Thu", "Chức Năng"];
 
 export default function Distrist({ auth }) {
-   
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -30,9 +30,9 @@ export default function Distrist({ auth }) {
             <div className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'}>
                 <Card className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
                     {/* bang ben trai  */}
-                   
+
                 </Card>
-               
+
             </div>
             <div className='fixed bottom-2 right-2'>
                 <FloatingButton />

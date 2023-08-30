@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import FloatingButton from '@/Components/nav/floatingButton';
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Button,
     Dialog,
@@ -13,6 +13,10 @@ import {
     TrashIcon, PaintBrushIcon, PaperAirplaneIcon
 
 } from "@heroicons/react/24/outline";
+import io from "socket.io-client";
+
+
+
 const TABLE_HEAD = ["Yêu Cầu Công Việc", "Địa Chỉ", "Quận", "Số Điện Thoại", "Thợ", "Hình Ảnh", "Chức Năng"];
 const TABLE_HEAD_RIGHT = ["Nội Dung Công Việc", "BH", "Địa Chỉ KH", "KV", "Thanh Toán", "SDT", "KTV", "Chi", "Thu", "Số Phiếu Thu", "Chức Năng"];
 var dataNew = [{
@@ -170,53 +174,35 @@ const listWorker = [
 
     }
 ]
-// ------------------------ data quan ----------------------------------
-const quanHuyen = [
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q1',
-        tenQuan: 'Quận 1'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q2',
-        tenQuan: 'Quận 2'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q3',
-        tenQuan: 'Quận 3'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q4',
-        tenQuan: 'Quận 4'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q5',
-        tenQuan: 'Quận 5'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q6',
-        tenQuan: 'Quận 6'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q7',
-        tenQuan: 'Quận 7'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q8',
-        tenQuan: 'Quận 8'
-    },
-]
-export default function Dashboard({ auth }) {
-    const [workData, setWorkData] = useState(dataNew)
+
+function Dashboard ({ auth }) {
+        const [socketD, setSocketD] = useState(null);
+        const [message, setMessage] = useState(auth.user.id);
+        // const [chatContent, setChatContent] = useState([]);
+
+        useEffect(() => {
+            const ip_address = window.location.hostname;
+            const socket_port = "3000";
+            const newSocket = io(ip_address + ":" + socket_port);
+            setSocketD(newSocket, {secure: true});
+            return () => {
+                newSocket.disconnect();
+            };
+        }, []);
+            useEffect(() => {
+            if (socketD) {
+                socketD.emit("pushOnline", message);
+            }
+        }, [socketD]);
+    // push online
+      const pushOnlineUser = (id)=>{
+        const url = '/api/web/push-online?id=' + id;
+        console.log(url);
+        fetch(url);
+      } ;
+      pushOnlineUser(message);
+
     // edit Table right
-    const [worksData, setWorksData] = useState(data)
     const onChangeInputTableRight = (e, idCV) => {
         const { name, value } = e.target
         const editDataTableRight = worksData.map((item) =>
@@ -224,18 +210,26 @@ export default function Dashboard({ auth }) {
         )
         setWorksData(editDataTableRight)
     }
-
+    // them lich bang ben trai ------------------------------
     const handleSubmitAddWork = (e) => {
         e.preventDefault();
         setWorksData(prev => {
             const newWorkData = [...prev, workData]
             const jsonNewData = JSON.stringify(newWorkData)
             localStorage.setItem('WorkData', jsonNewData)
+            console.log('jsonNewData ktra',jsonNewData);
             return newWorkData
         })
         setWorkData('')
 
     }
+    // xoa lich bang ben trai ------------------------------
+    const handleDeleteRow = (idCV) => {
+        const updatedTableData = workData.filter(item => item.idCV !== idCV);
+        setWorkData(updatedTableData);
+        console.log('kiem tra workdata Update ',updatedTableData);
+    };
+    // -----------------------------------------
     const onChangeInput = (e, idCV) => {
         const { name, value } = e.target
         console.log('name', name)
@@ -250,6 +244,7 @@ export default function Dashboard({ auth }) {
     const [selectedOption, setSelectedOption] = useState();
     const [options, setOptions] = useState([]);
     useEffect(() => {
+
         setOptions(listWorker);
     }, []);
 
@@ -262,9 +257,7 @@ export default function Dashboard({ auth }) {
     // ------------------option select quan huyen  ---------------
     const [selectedOptionDistrict, setSelectedOptionDistrict] = useState();
     const [optionsDistrict, setOptionsDistrict] = useState([]);
-    useEffect(() => {
-        setOptionsDistrict(quanHuyen);
-    }, []);
+
 
     const handleOptionChangeDistrict = (e, idQuan) => {
         console.log('Kiem Tra id Quan',idQuan);
@@ -294,119 +287,249 @@ export default function Dashboard({ auth }) {
     };
 
     // -------------------open dialog------------
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen((cur) => !cur);
+    // ----------------------------------- list table left body  -------------------------------------
+    const [workData, setWorkData] = useState(dataNew)
+    const ListTrTableLeft =  workData.map(({ work_content, street, phone_number, district, idCV, idQuan,image_work_path }, index) => {
+        const isLast = index === data.length - 1;
+        const classes = isLast ? "w-fit " : "border-b border-blue-gray-50 w-fit";
+        const classGeneral1 = "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
+        // convert string to obj -------------------
+        if (typeof image_work_path !== 'undefined') {
+            var url_img = image_work_path?.split(',');
+            console.log('ktra url');
+        }
+        return (
+            <tr key={idCV} id={idCV}>
+                <td className={classes}>
+                    <input
+                        name='yccv'
+                        value={work_content}
+                        type="text"
+                        onChange={(e) => onChangeInput(e, idCV)}
+                        placeholder="Yêu Cầu Công Việc"
+                        className={classGeneral1}
+                    />
+                </td>
+                <td className={`${classes} bg-blue-gray-50/50`}>
+                    <input
+                        name='diaChi'
+                        type="text"
+                        placeholder="Địa Chỉ"
+                        className={classGeneral1}
+                        value={street}
+                        onChange={(e) => onChangeInput(e, idCV)}
+                    />
+                </td>
+                <td className={classes}>
 
+                    <input
+                        name='quan'
+                        type="text"
+                        placeholder="Quận"
+                        className={`${classGeneral1} text-center w-12`}
+                        value={district}
+                        onChange={(e) => onChangeInput(e, idCV)}
+                    />
+                </td>
+                <td className={classes}>
+                    <input
+                        name='sdt'
+                        type="text"
+                        placeholder="Số Điện Thoại"
+                        className={`${classGeneral1} w-28 text-center`}
+                        value={phone_number}
+                        onChange={(e) => onChangeInput(e, idCV)}
+                    />
+                </td>
+                <td className={`${classes} bg-blue-gray-50/50 w-20  `}>
+                    <select id={idCV} value={selectedOptionDistrict} onChange={(e) => {if (typeof idQuan !=='undefined') {
+                        handleOptionChangeDistrict(e, idQuan)
+                    }}} className={classGeneral1}>
+                        <option value="">Chọn</option>
+                        {optionsDistrict.map((optionDistrict, index) => (
+                            <option key={index} value={optionDistrict.tenQuan}>
+                                {optionDistrict.tenQuan}
+                            </option>
+                        ))}
+                    </select>
+                </td>
+                <td className={`${classes}  `}>
+                    {
+                        url_img?.map((item, index) => {
+                            if (item !== '') {
+                                return <>
+                                    <Avatar  className="mr-1 overflow-hidden transition-opacity cursor-pointer h-9 w-9 hover:opacity-90" alt="avatar" src={item} variant="rounded" onClick= {handleOpen}/>
+                                    <Dialog key={index} size="xl" open={open} handler={handleOpen} className='w-1/2'>
+                                        <DialogBody divider={true} className="p-2 text-center ">
+                                            <img key={index} src={item} alt="avatar" className='inline-block w-1/2'/>
+                                        </DialogBody>
+                                    </Dialog>
+                                    {console.log('kiem tra hinh', item, index)}
+                                </>
+                            }
+
+                        })
+                    }
+                </td>
+                <td className={`w-32 ${classes}`} style={{ height: '10px' }} >
+                    <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none' onClick={(e)=>{handleDeleteRow(e, idCV)}}><TrashIcon className='w-4 h-4' /> </Button>
+                    <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none ' onClick={e => handleSubmitAddWork(e, idCV)}><PaperAirplaneIcon className='w-4 h-4' /></Button>
+                </td>
+            </tr>
+        );
+    })
+    // ------------------------ List Tr Table Right --------------------------------------
+    const [worksData, setWorksData] = useState(data)
+    const ListTrTableRight = worksData.map(({ yccv, diaChi, sdt, quan, idCV, dsChi, dsThu, BH, tinhTrangTT, soPhieuThu }, index) => {
+        const isLast = index === data.length - 1;
+        const classes = isLast ? "p-1 w-3 " : "p-1 border-b border-blue-gray-50 w-3";
+        const classGeneral = "border  p-1 rounded border-blue-gray-50 bg-white text-black shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
+        return (
+            <tr key={index} id={index}>
+
+                <td className={classes}>
+                    <input
+                        name='yccv'
+                        value={yccv ?? ''}
+                        type="text"
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                        placeholder="Nội Dung Công Việc"
+                        className={classGeneral}
+
+                    />
+                </td>
+                <td className={classes}>
+
+                    <input
+                        name='BH'
+                        type="text"
+                        placeholder="BH"
+                        className={`${classGeneral} text-center w-12`}
+                        value={BH ?? ''}
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                    />
+                </td>
+                <td className={`${classes} bg-blue-gray-50/50`}>
+                    <input
+                        name='diaChi'
+                        type="text"
+                        placeholder="Địa Chỉ"
+                        className={classGeneral}
+
+                        value={diaChi ?? ''}
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                    />
+                </td>
+
+                <td className={classes}>
+
+                    <input
+                        name='quan'
+                        type="text"
+                        placeholder="Quận"
+                        className={`${classGeneral} text-center w-12`}
+                        value={quan ?? ''}
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                    />
+                </td>
+                <td className={classes}>
+
+                    <input
+                        name='tinhTrangTT'
+                        type="text"
+                        placeholder=""
+                        className={`${classGeneral} text-center w-16`}
+                        value={tinhTrangTT ?? ''}
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                    />
+                </td>
+                <td className={classes}>
+                    <input
+                        name='sdt'
+                        type="text"
+                        placeholder="Số Điện Thoại"
+                        className={`${classGeneral} w-28 text-center`}
+                        value={sdt ?? ''}
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                    />
+                </td>
+                <td className={`${classes} bg-blue-gray-50/50 w-20`}>
+
+                    <select id={idCV} value={selectedOption} onChange={(e) => {
+                        if (typeof idTho !== 'undefined') {
+                            handleOptionChange(e, idTho)
+                        }
+                    }} className={classGeneral}>
+                        <option value="">Chọn</option>
+                        {options.map((option, index) => (
+                            <option key={index} value={option.tenNV}>
+                                {option.tenNV}
+                            </option>
+                        ))}
+                    </select>
+
+                </td>
+                <td className={classes}>
+                    <input
+                        name='dsChi'
+                        type="text"
+                        placeholder="Chi"
+                        className={`${classGeneral} w-28 text-center`}
+                        value={dsChi}
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                    />
+                </td>
+                <td className={classes}>
+                    <input
+                        name='dsThu'
+                        type="text"
+                        placeholder="Thu"
+                        className={`${classGeneral} w-28 text-center`}
+                        value={dsThu}
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                    />
+                </td>
+                <td className={classes}>
+                    <input
+                        name='soPhieuThu'
+                        type="text"
+                        placeholder="Thu"
+                        className={`${classGeneral} w-28 text-center`}
+                        value={soPhieuThu}
+                        onChange={(e) => onChangeInputTableRight(e, idCV)}
+                    />
+                </td>
+
+                <td className={`w-32 ${classes} `}>
+                    <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
+                    <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none '><PaintBrushIcon className='w-4 h-4' /></Button>
+
+
+                </td>
+            </tr>
+        );
+    })
     return (
         <AuthenticatedLayout
             user={auth.user}
         >
             <Head title="Trang Chủ" />
-            <div className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'}>
-                <Card className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
+            <div className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
+                <Card className={'grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
                     {/* bang ben trai  */}
                     <table className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`} style={{ height: `300px` }}>
                         <thead>
                             <tr>
-                                {TABLE_HEAD.map((head) => (
-                                    <th key={head} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50 w-fit">
+                                {TABLE_HEAD.map((head, index) => (
+                                    <th key={index} id={index} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50 w-fit">
                                         {head}
                                     </th>
                                 ))}
                             </tr>
-
                         </thead>
-                        <tbody>
-                            {workData.map(({ id, work_content, street, phone_number, district, idCV, KTV, idQuan,image_work_path }, index) => {
-                                const isLast = index === data.length - 1;
-                                const classes = isLast ? "w-fit " : "border-b border-blue-gray-50 w-fit";
-                                const classGeneral1 = "border text-black p-1 rounded border-blue-gray-50 bg-white shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
-                                // convert string to obj -------------------
-                                if (typeof image_work_path !== 'undefined') {
-                                    var url_img = image_work_path?.split(',');
-                                }
-                                return (
-                                    <tr key={id}>
-                                        <td className={classes}>
-                                            <input
-                                                name='yccv'
-                                                value={work_content}
-                                                type="text"
-                                                onChange={(e) => onChangeInput(e, idCV)}
-                                                placeholder="Yêu Cầu Công Việc"
-                                                className={classGeneral1}
-
-                                            />
-                                        </td>
-                                        <td className={`${classes} bg-blue-gray-50/50`}>
-                                            <input
-                                                name='diaChi'
-                                                type="text"
-                                                placeholder="Địa Chỉ"
-                                                className={classGeneral1}
-                                                value={street}
-                                                onChange={(e) => onChangeInput(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={classes}>
-
-                                            <input
-                                                name='quan'
-                                                type="text"
-                                                placeholder="Quận"
-                                                className={`${classGeneral1} text-center w-12`}
-                                                value={district}
-                                                onChange={(e) => onChangeInput(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={classes}>
-                                            <input
-                                                name='sdt'
-                                                type="text"
-                                                placeholder="Số Điện Thoại"
-                                                className={`${classGeneral1} w-28 text-center`}
-                                                value={phone_number}
-                                                onChange={(e) => onChangeInput(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={`${classes} bg-blue-gray-50/50 w-20  `}>
-                                            <select id={idCV} value={selectedOptionDistrict} onChange={(e) => {if (typeof idQuan !=='undefined') {
-                                                handleOptionChangeDistrict(e, idQuan)
-                                            }}} className={classGeneral1}>
-                                                <option value="">Chọn</option>
-                                                {optionsDistrict.map((optionDistrict, index) => (
-                                                    <option key={index} value={optionDistrict.tenQuan}>
-                                                        {optionDistrict.tenQuan}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                        <td className={`${classes} bg-blue-gray-50/50 w-20 grid grid-cols-2 gap-1 items-center`}>
-                                            {
-                                                url_img?.map((item, index) => {
-                                                    if (item !== '') {
-                                                        return <div >
-                                                            <Avatar className="overflow-hidden transition-opacity cursor-pointer h-9 w-9 hover:opacity-90" src={item} alt="avatar" variant="rounded" onClick={handleOpen} />
-                                                            <Dialog size="xl" open={open} handler={handleOpen} className='w-1/2'>
-                                                                <DialogBody divider={true} className="p-2 text-center ">
-                                                                    <img key={index} src={item} alt="" className='inline-block w-1/2' />
-                                                                </DialogBody>
-                                                            </Dialog>
-                                                        </div>
-                                                    }
-                                                })
-                                            }
-                                        </td>
-                                        <td className={`w-32 ${classes}`} style={{ height: '10px' }} >
-                                            <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
-                                            <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none ' onClick={e => handleSubmitAddWork(e, idCV)}><PaperAirplaneIcon className='w-4 h-4' /></Button>
-                                        </td>
-
-                                    </tr>
-                                );
-                            })}
-
-                        </tbody>
+                        <tbody>{ListTrTableLeft}</tbody>
                     </table>
                 </Card>
                 <Card className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
@@ -414,8 +537,8 @@ export default function Dashboard({ auth }) {
                     <table className="w-full text-left table-auto min-w-max " style={{ height: `${heightScreenTV}px` }}>
                         <thead>
                             <tr>
-                                {TABLE_HEAD_RIGHT.map((head) => (
-                                    <th key={head} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50">
+                                {TABLE_HEAD_RIGHT.map((head, index) => (
+                                    <th key={index} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50">
                                         {head}
                                     </th>
                                 ))}
@@ -423,135 +546,7 @@ export default function Dashboard({ auth }) {
 
                         </thead>
                         <tbody>
-                            {worksData.map(({ yccv, diaChi, sdt, quan, idCV, dsChi, dsThu, BH, tinhTrangTT, soPhieuThu }, index) => {
-                                const isLast = index === data.length - 1;
-                                const classes = isLast ? "p-1 w-3 " : "p-1 border-b border-blue-gray-50 w-3";
-                                const classGeneral = "border  p-1 rounded border-blue-gray-50 bg-white text-black shadow-lg shadow-blue-gray-900/5 ring-4 ring-transparent placeholder:text-blue-gray-200 focus:!border-blue-500 focus:!border-t-blue-500 focus:ring-blue-500/20 outline-none "
-                                return (
-                                    <tr key={index}>
-
-                                        <td className={classes}>
-                                            <input
-                                                name='yccv'
-                                                value={yccv ?? ''}
-                                                type="text"
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                                placeholder="Nội Dung Công Việc"
-                                                className={classGeneral}
-
-                                            />
-                                        </td>
-                                        <td className={classes}>
-
-                                            <input
-                                                name='BH'
-                                                type="text"
-                                                placeholder="BH"
-                                                className={`${classGeneral} text-center w-12`}
-                                                value={BH ?? ''}
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={`${classes} bg-blue-gray-50/50`}>
-                                            <input
-                                                name='diaChi'
-                                                type="text"
-                                                placeholder="Địa Chỉ"
-                                                className={classGeneral}
-
-                                                value={diaChi ?? ''}
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            />
-                                        </td>
-
-                                        <td className={classes}>
-
-                                            <input
-                                                name='quan'
-                                                type="text"
-                                                placeholder="Quận"
-                                                className={`${classGeneral} text-center w-12`}
-                                                value={quan ?? ''}
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={classes}>
-
-                                            <input
-                                                name='tinhTrangTT'
-                                                type="text"
-                                                placeholder=""
-                                                className={`${classGeneral} text-center w-16`}
-                                                value={tinhTrangTT ?? ''}
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={classes}>
-                                            <input
-                                                name='sdt'
-                                                type="text"
-                                                placeholder="Số Điện Thoại"
-                                                className={`${classGeneral} w-28 text-center`}
-                                                value={sdt ?? ''}
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={`${classes} bg-blue-gray-50/50 w-20`}>
-
-                                            <select id={idCV} value={selectedOption} onChange={(e) => {
-                                                if (typeof idTho !== 'undefined') {
-                                                    handleOptionChange(e, idTho)
-                                                }
-                                            }} className={classGeneral}>
-                                                <option value="">Chọn</option>
-                                                {options.map((option, index) => (
-                                                    <option key={index} value={option.tenNV}>
-                                                        {option.tenNV}
-                                                    </option>
-                                                ))}
-                                            </select>
-
-                                        </td>
-                                        <td className={classes}>
-                                            <input
-                                                name='dsChi'
-                                                type="text"
-                                                placeholder="Chi"
-                                                className={`${classGeneral} w-28 text-center`}
-                                                value={dsChi}
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={classes}>
-                                            <input
-                                                name='dsThu'
-                                                type="text"
-                                                placeholder="Thu"
-                                                className={`${classGeneral} w-28 text-center`}
-                                                value={dsThu}
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            />
-                                        </td>
-                                        <td className={classes}>
-                                            <input
-                                                name='soPhieuThu'
-                                                type="text"
-                                                placeholder="Thu"
-                                                className={`${classGeneral} w-28 text-center`}
-                                                value={soPhieuThu}
-                                                onChange={(e) => onChangeInputTableRight(e, idCV)}
-                                            />
-                                        </td>
-
-                                        <td className={`w-32 ${classes} `}>
-                                            <Button variant="outlined" className='p-1 mr-1 text-red-500 border-red-500 border-none'><TrashIcon className='w-4 h-4' /> </Button>
-                                            <Button variant="outlined" className='p-1 text-blue-500 border-blue-500 border-none '><PaintBrushIcon className='w-4 h-4' /></Button>
-
-
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                            {ListTrTableRight}
                         </tbody>
                     </table>
                 </Card>
@@ -561,4 +556,7 @@ export default function Dashboard({ auth }) {
             </div>
         </AuthenticatedLayout>
     );
+
 }
+
+export default Dashboard
