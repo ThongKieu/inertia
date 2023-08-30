@@ -14,15 +14,8 @@ class DistrictController extends Controller
     public function index()
     {
         //
-<<<<<<< HEAD:app/Http/Controllers/Api/DistristController.php
-        $data = Distrists::all();
-        dd($data);
-        return response()->json($data);
-
-=======
         $data = District::all();
         return response()->json($data);
->>>>>>> 850bc64b30b364d2cd82ba2fc01fecd8caa01e15:app/Http/Controllers/Api/DistrictController.php
     }
 
     /**

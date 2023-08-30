@@ -12,8 +12,6 @@ import {
 import {
     HomeIcon,
     UserCircleIcon,
-
-
     ChevronDownIcon,
     PowerIcon,
     Bars2Icon,
@@ -52,7 +50,7 @@ function ProfileMenu() {
                     </svg>
                 </NavLink>
                 <NavLink
-                    href={route('dashboard')}
+                    href={route('chat')}
                     className="ml-2 cursor-pointer py-1.5 font-medium "
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-blue-500">
@@ -60,7 +58,7 @@ function ProfileMenu() {
                     </svg>
                 </NavLink>
                 <NavLink
-                    href={route('dashboard')}
+                    href={route('notice')}
                     className="ml-2 cursor-pointer py-1.5 font-medium "
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-yellow-500">
@@ -132,12 +130,12 @@ const navListItems = [
     {
         id: 1, label: "Trang Chủ",
         icon: HomeIcon,
-        href: '/'
+        href: 'dashboard'
     },
     {
         id: 2,
         label: "Tìm Kiếm",
-        icon: UserCircleIcon, href: '/tim-khach-hang'
+        icon: UserCircleIcon, href: 'search'
     },
     // {
     //     id: 3,
@@ -155,8 +153,8 @@ function NavList() {
     return (
         <ul className="flex flex-col gap-2 mt-2 mb-4 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center">
 
-            {navListItems.map(({ label, icon }, key) => (
-                <NavLink key={key} href={route('dashboard')} className="font-normal">
+            {navListItems.map(({ label, icon, href }, index) => (
+                <NavLink key={index} href={route(`${href}`)} className="font-normal">
                     <MenuItem className="flex items-center gap-2 text-black lg:rounded-full">
                         {React.createElement(icon, { className: "h-[18px] w-[18px]" })}{" "}
                         {label}
@@ -167,6 +165,7 @@ function NavList() {
         </ul>
     );
 }
+
 
 function NavbarDefault() {
     const [isNavOpen, setIsNavOpen] = React.useState(false);

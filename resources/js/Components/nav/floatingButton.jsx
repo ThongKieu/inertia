@@ -23,50 +23,9 @@ function formatCardNumber(value) {
         return value;
     }
 }
-
-// ------------------------ data quan ----------------------------------
-const quanHuyen = [
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q1',
-        tenQuan: 'Quận 1'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q2',
-        tenQuan: 'Quận 2'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q3',
-        tenQuan: 'Quận 3'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q4',
-        tenQuan: 'Quận 4'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q5',
-        tenQuan: 'Quận 5'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q6',
-        tenQuan: 'Quận 6'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q7',
-        tenQuan: 'Quận 7'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q8',
-        tenQuan: 'Quận 8'
-    },
-]
+// --------------------API ---------
+ const url_API = 'api/web/works';
+ const url_API_District = 'api/web/district';
 function formatExpires(value) {
     return value
         .replace(/[^0-9]/g, "")
@@ -128,10 +87,20 @@ function FloatingButton() {
         setSelectedOption(event.target.value);
     };
     useEffect(() => {
-        setOptionsDistrict(quanHuyen);
+        fetchData()
     }, []);
 
+    const fetchData = async () => {
+        try {
+            const response = await fetch(url_API_District);
+            const jsonData = await response.json();
+            setOptionsDistrict(jsonData);
+            console.log(jsonData);
 
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
     const handleAddWork = async (e) => {
         e.preventDefault();
 
@@ -152,7 +121,7 @@ function FloatingButton() {
         try {
             console.log("fhihihihihihihihi", formData1);
 
-            const response = await fetch('api/web/works', {
+            const response = await fetch(url_API, {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -227,8 +196,8 @@ function FloatingButton() {
 
                                 <select value={selectedOption} onChange={handleOptionChangeDistrict} className="border rounded-lg" >
                                 {optionsDistrict.map((optionDistrict, index) => (
-                                        <option key={index} value={optionDistrict.tenVietTat}>
-                                            {optionDistrict.tenQuan}
+                                        <option key={index} value={optionDistrict.dis_sort_name}>
+                                            {optionDistrict.dis_name}
                                         </option>
                                     ))}
                                 </select>

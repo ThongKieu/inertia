@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import FloatingButton from '@/Components/nav/floatingButton';
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
     Button,
     Dialog,
@@ -13,6 +13,10 @@ import {
     TrashIcon, PaintBrushIcon, PaperAirplaneIcon
 
 } from "@heroicons/react/24/outline";
+import io from "socket.io-client";
+
+
+
 const TABLE_HEAD = ["Yêu Cầu Công Việc", "Địa Chỉ", "Quận", "Số Điện Thoại", "Thợ", "Hình Ảnh", "Chức Năng"];
 const TABLE_HEAD_RIGHT = ["Nội Dung Công Việc", "BH", "Địa Chỉ KH", "KV", "Thanh Toán", "SDT", "KTV", "Chi", "Thu", "Số Phiếu Thu", "Chức Năng"];
 var dataNew = [{
@@ -170,50 +174,34 @@ const listWorker = [
 
     }
 ]
-// ------------------------ data quan ----------------------------------
-const quanHuyen = [
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q1',
-        tenQuan: 'Quận 1'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q2',
-        tenQuan: 'Quận 2'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q3',
-        tenQuan: 'Quận 3'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q4',
-        tenQuan: 'Quận 4'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q5',
-        tenQuan: 'Quận 5'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q6',
-        tenQuan: 'Quận 6'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q7',
-        tenQuan: 'Quận 7'
-    },
-    {
-        idQuan: Math.floor(Math.random() * 1000),
-        tenVietTat: 'q8',
-        tenQuan: 'Quận 8'
-    },
-]
-export default function Dashboard({ auth }) {
+
+function Dashboard ({ auth }) {
+        const [socketD, setSocketD] = useState(null);
+        const [message, setMessage] = useState(auth.user.id);
+        // const [chatContent, setChatContent] = useState([]);
+
+        useEffect(() => {
+            const ip_address = window.location.hostname;
+            const socket_port = "3000";
+            const newSocket = io(ip_address + ":" + socket_port);
+            setSocketD(newSocket, {secure: true});
+            return () => {
+                newSocket.disconnect();
+            };
+        }, []);
+            useEffect(() => {
+            if (socketD) {
+                socketD.emit("pushOnline", message);
+            }
+        }, [socketD]);
+    // push online
+      const pushOnlineUser = (id)=>{
+        const url = '/api/web/push-online?id=' + id;
+        console.log(url);
+        fetch(url);
+      } ;
+      pushOnlineUser(message);
+
     // edit Table right
     const onChangeInputTableRight = (e, idCV) => {
         const { name, value } = e.target
@@ -229,6 +217,7 @@ export default function Dashboard({ auth }) {
             const newWorkData = [...prev, workData]
             const jsonNewData = JSON.stringify(newWorkData)
             localStorage.setItem('WorkData', jsonNewData)
+            console.log('jsonNewData ktra',jsonNewData);
             return newWorkData
         })
         setWorkData('')
@@ -255,6 +244,7 @@ export default function Dashboard({ auth }) {
     const [selectedOption, setSelectedOption] = useState();
     const [options, setOptions] = useState([]);
     useEffect(() => {
+
         setOptions(listWorker);
     }, []);
 
@@ -267,9 +257,7 @@ export default function Dashboard({ auth }) {
     // ------------------option select quan huyen  ---------------
     const [selectedOptionDistrict, setSelectedOptionDistrict] = useState();
     const [optionsDistrict, setOptionsDistrict] = useState([]);
-    useEffect(() => {
-        setOptionsDistrict(quanHuyen);
-    }, []);
+
 
     const handleOptionChangeDistrict = (e, idQuan) => {
         console.log('Kiem Tra id Quan',idQuan);
@@ -299,7 +287,7 @@ export default function Dashboard({ auth }) {
     };
 
     // -------------------open dialog------------
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const handleOpen = () => setOpen((cur) => !cur);
     // ----------------------------------- list table left body  -------------------------------------
     const [workData, setWorkData] = useState(dataNew)
@@ -310,6 +298,7 @@ export default function Dashboard({ auth }) {
         // convert string to obj -------------------
         if (typeof image_work_path !== 'undefined') {
             var url_img = image_work_path?.split(',');
+            console.log('ktra url');
         }
         return (
             <tr key={idCV} id={idCV}>
@@ -366,19 +355,21 @@ export default function Dashboard({ auth }) {
                         ))}
                     </select>
                 </td>
-                <td className={`${classes} bg-blue-gray-50/50 w-20 grid grid-cols-2 gap-1 items-center`}>
+                <td className={`${classes}  `}>
                     {
                         url_img?.map((item, index) => {
                             if (item !== '') {
-                                return <div >
-                                    <Avatar className="overflow-hidden transition-opacity cursor-pointer h-9 w-9 hover:opacity-90" src={item} alt="avatar" variant="rounded" onClick={handleOpen} />
-                                    <Dialog size="xl" open={open} handler={handleOpen} className='w-1/2'>
+                                return <>
+                                    <Avatar  className="mr-1 overflow-hidden transition-opacity cursor-pointer h-9 w-9 hover:opacity-90" alt="avatar" src={item} variant="rounded" onClick= {handleOpen}/>
+                                    <Dialog key={index} size="xl" open={open} handler={handleOpen} className='w-1/2'>
                                         <DialogBody divider={true} className="p-2 text-center ">
-                                            <img key={index} src={item} alt="" className='inline-block w-1/2' />
+                                            <img key={index} src={item} alt="avatar" className='inline-block w-1/2'/>
                                         </DialogBody>
                                     </Dialog>
-                                </div>
+                                    {console.log('kiem tra hinh', item, index)}
+                                </>
                             }
+
                         })
                     }
                 </td>
@@ -525,7 +516,7 @@ export default function Dashboard({ auth }) {
             user={auth.user}
         >
             <Head title="Trang Chủ" />
-            <div className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'}>
+            <div className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
                 <Card className={'grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
                     {/* bang ben trai  */}
                     <table className={`h-[${heightScreenTV}px] w-full text-left border-r-4 border-red-500 table-auto min-w-max`} style={{ height: `300px` }}>
@@ -546,8 +537,8 @@ export default function Dashboard({ auth }) {
                     <table className="w-full text-left table-auto min-w-max " style={{ height: `${heightScreenTV}px` }}>
                         <thead>
                             <tr>
-                                {TABLE_HEAD_RIGHT.map((head) => (
-                                    <th key={head} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50">
+                                {TABLE_HEAD_RIGHT.map((head, index) => (
+                                    <th key={index} className="p-1 text-sm font-normal leading-none border-b opacity-70 border-blue-gray-100 bg-blue-gray-50">
                                         {head}
                                     </th>
                                 ))}
@@ -565,4 +556,7 @@ export default function Dashboard({ auth }) {
             </div>
         </AuthenticatedLayout>
     );
+
 }
+
+export default Dashboard
