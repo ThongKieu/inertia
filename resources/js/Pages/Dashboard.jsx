@@ -513,7 +513,7 @@ function Dashboard ({ auth }) {
     })
     return (
         <AuthenticatedLayout
-            user={auth.user}
+            children={auth.user}
         >
             <Head title="Trang Chủ" />
             <div className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >

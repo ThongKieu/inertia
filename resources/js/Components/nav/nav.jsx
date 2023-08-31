@@ -167,9 +167,10 @@ function NavList() {
 }
 
 
-function NavbarDefault() {
+function NavbarDefault(auth) {
     const [isNavOpen, setIsNavOpen] = React.useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+    console.log(auth + 'ssssss');
 
     React.useEffect(() => {
         window.addEventListener(
