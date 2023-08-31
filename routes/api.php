@@ -22,6 +22,7 @@ Route::prefix('web')->group(function () {
     Route::apiResource('workers',WorkersController::class);
     Route::apiResource('district',DistrictController::class);
     Route::get('push-online','App\Http\Controllers\Api\Web\PushOnlineController@updateOnline');
+    Route::get('list-online','App\Http\Controllers\Api\Web\PushOnlineController@listOnline');
 
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

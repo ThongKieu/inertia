@@ -514,7 +514,7 @@ function Dashboard ({ auth }) {
     })
     return (
         <AuthenticatedLayout
-            user={auth.user}
+            children={auth.user}
         >
             <Head title="Trang Chủ" />
 
