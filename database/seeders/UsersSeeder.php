@@ -18,17 +18,21 @@ class UsersSeeder extends Seeder
       User::factory()->create([
                 'name' => 'Trần Mạnh',
                 'email' => 'tranmanh@thoviet.com.vn',
-                'password' => Hash::make('Thoviet58568!@#')
+                'password' => Hash::make('Thoviet58568!@#'),
+                'permission'=>1,
+                'avata'=>'assets/avata/avata1.png'
             ],);
             User::factory()->create([
                 'name' => 'Tùng Phan',
                 'email' => 'tung@thoviet.com.vn',
-                'password' => Hash::make('Thoviet58568!@#')
+                'password' => Hash::make('Thoviet58568!@#'), 'permission'=>1,
+                'avata'=>'ssets/avata/avata2.png'
             ],);
             User::factory()->create([
                 'name' => 'Thống Kiều',
                 'email' => 'thong@thoviet.com.vn',
-                'password' => Hash::make('Thoviet58568!@#')
+                'password' => Hash::make('Thoviet58568!@#'), 'permission'=>1,
+                'avata'=>'ssets/avata/avata3.png'
             ],);
     }
 }
