@@ -1,10 +1,16 @@
-import NavbarDefault from '@/Components/nav/nav';
+import FloatingButton from "@/Components/nav/floatingButton";
+import NavbarDefault from "@/Components/nav/nav";
 
-function Authenticated({ children}) {
+
+function Authenticated({ children, user}) {
+    console.log('sdd', children, user);
     return (
         <div className="min-h-screen bg-gray-100">
-            <NavbarDefault />
+            <NavbarDefault propAuth={user}/>
             <main >{children}</main>
+            <div className='fixed bottom-2 right-2'>
+                <FloatingButton />
+            </div>
         </div>
     );
 }

@@ -167,7 +167,7 @@ function NavList() {
 }
 
 
-function NavbarDefault() {
+function NavbarDefault({propAuth}) {
     const [isNavOpen, setIsNavOpen] = React.useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -177,7 +177,7 @@ function NavbarDefault() {
             () => window.innerWidth >= 960 && setIsNavOpen(false),
         );
     }, []);
-
+    console.log('xin chao', propAuth);
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto mt-2 text-black-400 lg:pl-6 bg-blue-gray-200">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900">
@@ -190,6 +190,7 @@ function NavbarDefault() {
                 >
                     <Bars2Icon className="w-6 h-6" />
                 </IconButton>
+                <p></p>
                 <div className="hidden p-0 m-0 lg:flex">
                     <NavLink
                         href={route('dashboard')}

@@ -9,7 +9,7 @@ function Chat(auth) {
     const [chatContent, setChatContent] = useState([]);
 
     useEffect(() => {
-        
+
         const ip_address = window.location.host;
 		console.log(window.location.host);
         const socket_port = "3000";
@@ -208,7 +208,7 @@ function Chat(auth) {
                 </div>
             </div>
         </AuthenticatedLayout>
-        
+
     );
 }
 

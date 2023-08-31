@@ -1,7 +1,8 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import FloatingButton from '@/Components/nav/floatingButton';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import NavbarDefault from '@/Components/nav/nav';
 import {
     Button,
     Dialog,
@@ -516,6 +517,7 @@ function Dashboard ({ auth }) {
             user={auth.user}
         >
             <Head title="Trang Chủ" />
+
             <div className={'  grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
                 <Card className={'grid w-full  grid-flow-col overflow-scroll auto-cols-max mt-1'} >
                     {/* bang ben trai  */}
@@ -551,9 +553,7 @@ function Dashboard ({ auth }) {
                     </table>
                 </Card>
             </div>
-            <div className='fixed bottom-2 right-2'>
-                <FloatingButton />
-            </div>
+
         </AuthenticatedLayout>
     );
 
