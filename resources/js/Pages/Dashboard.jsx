@@ -198,7 +198,6 @@ function Dashboard ({ auth }) {
     // push online
       const pushOnlineUser = (id)=>{
         const url = '/api/web/push-online?id=' + id;
-        console.log(url);
         fetch(url);
       } ;
       pushOnlineUser(message);
@@ -218,7 +217,6 @@ function Dashboard ({ auth }) {
             const newWorkData = [...prev, workData]
             const jsonNewData = JSON.stringify(newWorkData)
             localStorage.setItem('WorkData', jsonNewData)
-            console.log('jsonNewData ktra',jsonNewData);
             return newWorkData
         })
         setWorkData('')
@@ -228,14 +226,10 @@ function Dashboard ({ auth }) {
     const handleDeleteRow = (idCV) => {
         const updatedTableData = workData.filter(item => item.idCV !== idCV);
         setWorkData(updatedTableData);
-        console.log('kiem tra workdata Update ',updatedTableData);
     };
     // -----------------------------------------
     const onChangeInput = (e, idCV) => {
         const { name, value } = e.target
-        console.log('name', name)
-        console.log('value', value)
-        console.log('idCV', idCV)
         const editData = workData.map((item) =>
             item.idCV === idCV && name ? { ...item, [name]: value } : item
         )
@@ -250,8 +244,6 @@ function Dashboard ({ auth }) {
     }, []);
 
     const handleOptionChange = (e, idTho) => {
-
-        console.log('Kiem Tra id Quan',idTho);
         setSelectedOption(e.target.value);
     };
 
@@ -261,7 +253,6 @@ function Dashboard ({ auth }) {
 
 
     const handleOptionChangeDistrict = (e, idQuan) => {
-        console.log('Kiem Tra id Quan',idQuan);
         setSelectedOptionDistrict(e.target.value);
     };
     //  ---------------------------------- reponve height table ---------------
@@ -270,7 +261,6 @@ function Dashboard ({ auth }) {
         height: window.innerHeight - 100,
     });
     var heightScreenTV = screenSize.height;
-    console.log('kich thuoc', heightScreenTV);
     // ---------------------fetch api left table -------------------------------------
     useEffect(() => {
         fetchData()
@@ -299,7 +289,6 @@ function Dashboard ({ auth }) {
         // convert string to obj -------------------
         if (typeof image_work_path !== 'undefined') {
             var url_img = image_work_path?.split(',');
-            console.log('ktra url');
         }
         return (
             <tr key={idCV} id={idCV}>
@@ -367,7 +356,6 @@ function Dashboard ({ auth }) {
                                             <img key={index} src={item} alt="avatar" className='inline-block w-1/2'/>
                                         </DialogBody>
                                     </Dialog>
-                                    {console.log('kiem tra hinh', item, index)}
                                 </>
                             }
 
@@ -515,6 +503,7 @@ function Dashboard ({ auth }) {
     return (
         <AuthenticatedLayout
             children={auth.user}
+            user={auth.user}
         >
             <Head title="Trang Chủ" />
 

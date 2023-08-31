@@ -14,7 +14,6 @@ createInertiaApp({
         const root = createRoot(el);
 
         root.render(<App {...props} key={index}  />);
-        console.log("Ktra app",App);
     },
     progress: {
         color: '#4B5563',

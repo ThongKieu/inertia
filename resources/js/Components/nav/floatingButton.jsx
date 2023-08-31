@@ -64,7 +64,6 @@ function FloatingButton() {
     });
     const handleChange = (e) => {
         const { name, value } = e.target;
-        // console.log('name', name);
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
@@ -73,7 +72,6 @@ function FloatingButton() {
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
         setSelectedFiles(files);
-        // console.log('Gui File', files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setPreviewImages(previews);
     };
@@ -95,7 +93,6 @@ function FloatingButton() {
             const response = await fetch(url_API_District);
             const jsonData = await response.json();
             setOptionsDistrict(jsonData);
-            console.log(jsonData);
 
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -119,8 +116,6 @@ function FloatingButton() {
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
         try {
-            console.log("fhihihihihihihihi", formData1);
-
             const response = await fetch(url_API, {
                 method: 'POST',
                 headers: {
@@ -130,14 +125,11 @@ function FloatingButton() {
                 mode: 'no-cors',
                 body: formData1,
             });
-            console.log('Files uploaded successfully', response);
             if (response.status !== 200) {
                 const err = new Error("Error")
                 throw err;
             }
             const dataReply = await response.json()
-            //   window.location.reload();
-            console.log(dataReply);
         } catch (error) {
             console.log(error);
         }

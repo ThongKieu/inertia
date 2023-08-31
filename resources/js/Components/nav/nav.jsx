@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import {
     Navbar,
     Collapse,
@@ -78,6 +78,7 @@ function ProfileMenu() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
                     </svg>
                 </NavLink>
+
                 <Button
                     variant="text"
                     color="blue-gray"
@@ -170,15 +171,12 @@ function NavList() {
 function NavbarDefault({propAuth}) {
     const [isNavOpen, setIsNavOpen] = React.useState(false);
     const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
-    console.log(auth + 'ssssss');
-
-    React.useEffect(() => {
+    useEffect(() => {
         window.addEventListener(
             "resize",
             () => window.innerWidth >= 960 && setIsNavOpen(false),
         );
     }, []);
-    console.log('xin chao', propAuth);
     return (
         <Navbar className="w-full max-w-full p-2 mx-auto mt-2 text-black-400 lg:pl-6 bg-blue-gray-200">
             <div className="relative flex items-center justify-between h-8 mx-auto text-blue-gray-900">
@@ -191,7 +189,6 @@ function NavbarDefault({propAuth}) {
                 >
                     <Bars2Icon className="w-6 h-6" />
                 </IconButton>
-                <p></p>
                 <div className="hidden p-0 m-0 lg:flex">
                     <NavLink
                         href={route('dashboard')}

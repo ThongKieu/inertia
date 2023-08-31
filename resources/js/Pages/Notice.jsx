@@ -56,9 +56,7 @@ function Notice(auth) {
 
     const handleTabClick = (tabId) => {
         setActiveTab(tabId);
-        console.log('kiem tra tabid', tabId);
     };
-    console.log('activeTab', activeTab);
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Có Lịch Mới" />

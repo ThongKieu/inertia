@@ -11,11 +11,9 @@ function Chat(auth) {
     useEffect(() => {
 
         const ip_address = window.location.host;
-		console.log(window.location.host);
         const socket_port = "3000";
         const newSocket = io(ip_address + ":" + socket_port);
         setSocket(newSocket, {secure: true});
-        console.log(newSocket, ip_address, socket_port);
         return () => {
             newSocket.disconnect();
         };
