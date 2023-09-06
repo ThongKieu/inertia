@@ -102,11 +102,10 @@ function FloatingButton() {
     const socket_port = "3000";
     const newSocket = io(ip_address + ":" + socket_port);
     useEffect(() => {
-        setSocketFTB(newSocket, { secure: true });
-        return () => {
-            newSocket.disconnect();
-        };
+        setOptionsDistrict(quanHuyen);
     }, []);
+
+
     const handleAddWork = async (e) => {
         e.preventDefault();
 
@@ -125,8 +124,10 @@ function FloatingButton() {
         formData1.append("street", formData.street);
         formData1.append("menber_read", formData.members_read);
         try {
-            const response = await fetch(url_API, {
-                method: "POST",
+            console.log("fhihihihihihihihi", formData1);
+
+            const response = await fetch('api/web/works', {
+                method: 'POST',
                 headers: {
                     Accept: "application/json",
                     "Content-Type": "application/json",
@@ -134,10 +135,14 @@ function FloatingButton() {
                 mode: "no-cors",
                 body: formData1,
             });
-            if (response.status === 200) {
-                socketFTB.emit("addWorkTo_Server", formData1);
-                // console.log('ddddd');
+            console.log('Files uploaded successfully', response);
+            if (response.status !== 200) {
+                const err = new Error("Error")
+                throw err;
             }
+            const dataReply = await response.json()
+            //   window.location.reload();
+            console.log(dataReply);
         } catch (error) {
             console.log(error);
         }
@@ -221,23 +226,12 @@ function FloatingButton() {
                                 {/* <Input label="Quận" className="shadow-none" id="district"
                                     name="district" value={formData.district} onChange={handleChange} /> */}
 
-                                <select
-                                    value={selectedOption}
-                                    onChange={handleOptionChangeDistrict}
-                                    className="border rounded-lg"
-                                >
-                                    {optionsDistrict.map(
-                                        (optionDistrict, index) => (
-                                            <option
-                                                key={index}
-                                                value={
-                                                    optionDistrict.dis_sort_name
-                                                }
-                                            >
-                                                {optionDistrict.dis_name}
-                                            </option>
-                                        )
-                                    )}
+                                <select value={selectedOption} onChange={handleOptionChangeDistrict} className="border rounded-lg" >
+                                {optionsDistrict.map((optionDistrict, index) => (
+                                        <option key={index} value={optionDistrict.tenVietTat}>
+                                            {optionDistrict.tenQuan}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
 

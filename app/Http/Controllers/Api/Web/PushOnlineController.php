@@ -12,7 +12,6 @@ class PushOnlineController extends Controller
 {
     public function __invoke()
     {
-
     }
     public function updateOnline(Request $re)
     {

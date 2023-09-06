@@ -1,5 +1,6 @@
 import NavbarDefault from '@/Components/nav/nav';
 import { Link, Head } from '@inertiajs/react';
+import Dashboard from './Dashboard';
 
 export default function Welcome({ auth, laravelVersion, phpVersion }) {
     return (
