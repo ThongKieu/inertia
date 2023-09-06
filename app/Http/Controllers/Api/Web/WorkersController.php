@@ -36,10 +36,9 @@ class WorkersController extends Controller
         'add_woker'=>$request->add_woker,
         'phone_ct'=>$request->phone_ct,
         'phone_cn'=>$request->phone_cn,
-        'folder_path'=>'assets/'.$request->sort_name,
+        'folder_path'=>'assets/workers'.$request->sort_name,
         'kind_worker'=>$request->kind_worker,
-
-        'avata'=>'assets/avata/'.$request->folder_path.'.png',
+        'avata'=>'assets/avata/avata1.png',
        ]);
         $new->save();
         return response()->json('Worker create');

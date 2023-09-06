@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\District;
+use App\Models\Districts;
 use Illuminate\Http\Request;
 
 class DistrictController extends Controller
@@ -14,15 +14,8 @@ class DistrictController extends Controller
     public function index()
     {
         //
-<<<<<<< HEAD:app/Http/Controllers/Api/DistristController.php
-        $data = Distrists::all();
-        dd($data);
+        $data = Districts::all();
         return response()->json($data);
-
-=======
-        $data = District::all();
-        return response()->json($data);
->>>>>>> 850bc64b30b364d2cd82ba2fc01fecd8caa01e15:app/Http/Controllers/Api/DistrictController.php
     }
 
     /**
@@ -42,7 +35,7 @@ class DistrictController extends Controller
         $vadilate = $request->validate([
             'dis_name'=>'required|max:200', 'dis_sort_name'=>'required|max 50'
         ]);
-        $ne = new District([
+        $ne = new Districts([
             'dis_name'=>$request->dis_name, 'dis_sort_name'=>$request->dis_sort_name
         ]);
         $ne ->save();

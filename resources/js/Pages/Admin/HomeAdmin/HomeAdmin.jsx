@@ -1,7 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/Admin/AuthenticatedLayoutAdmin';
+import Home from '@/Pages/Admin/HomeAdmin/Components/Home';
 import { Head } from '@inertiajs/react';
 import React from 'react'
-import { Button, Card, Input, Checkbox, Typography } from "@material-tailwind/react";
 
 export default function HomeAdmin({ auth }) {
     return (
@@ -9,6 +9,7 @@ export default function HomeAdmin({ auth }) {
             user={auth.user}
         >
             <Head title="Home Admin" />
+            <Home />
         </AuthenticatedLayout>
     );
 }

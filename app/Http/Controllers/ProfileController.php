@@ -23,10 +23,7 @@ class ProfileController extends Controller
             'status' => session('status'),
         ]);
     }
-    // public function test(Request $request): Response
-    // {
-    //     return Inertia::render('Admin/Test');
-    // }
+    
 
 
     /**

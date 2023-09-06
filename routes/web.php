@@ -30,10 +30,18 @@ use Inertia\Inertia;
 
 
 Route::middleware('auth')->group(function () {
+    Route::get('/welcome', function () {return Inertia::render('Welcome');})->name('welcome');
     Route::get('/', function () {return Inertia::render('Dashboard');})->name('dashboard');
+    Route::get('/chat', function () {return Inertia::render('chat/Chat');})->name('chat');
+    Route::get('/tim-kiem', function () {return Inertia::render('Search');})->name('search');
+    Route::get('/thong-bao-lich-moi', function () {return Inertia::render('Notice');})->name('notice');
     Route::prefix('admin')->group(function(){
         Route::get('/',function(){return Inertia::render('Admin/HomeAdmin');})->name('admin');
         Route::get('/worker',function(){return Inertia::render('Admin/Worker/Worker');})->name('Worker');
+    });
+    Route::prefix('worker')->group(function(){
+        Route::get('/',function(){return Inertia::render('Worker/Worker-main');})->name('worker');
+        // Route::get('/worker',function(){return Inertia::render('Admin/Worker/Worker');})->name('Worker');
     });
     Route::get('/distrist', function () {return Inertia::render('Distrist');})->name('distrist');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
