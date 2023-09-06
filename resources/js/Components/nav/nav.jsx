@@ -109,7 +109,7 @@ function ProfileMenu({propAuthProfile}) {
                 {profileMenuItems.map(({ label, icon, href }, key) => {
                     const isLastItem = key === profileMenuItems.length - 1;
                     return (
-                        <NavLink key={key}
+                        <MenuItem key={key}
                             href={href}
                             className={`flex items-center gap-2 rounded outline-none ${isLastItem
                                 ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
@@ -135,7 +135,7 @@ function ProfileMenu({propAuthProfile}) {
             })}
         </MenuList>
     </Menu>
-</div>
+
     );
 }
 
